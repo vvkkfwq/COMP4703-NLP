@@ -1,19 +1,19 @@
 INFO:__main__:
-get_file_len executed in: 0.1438159942626953 seconds
+get_file_len executed in: 0.1979072093963623 seconds
 
 DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): raw.githubusercontent.com:443
 DEBUG:urllib3.connectionpool:https://raw.githubusercontent.com:443 "GET /explosion/spacy-models/master/compatibility.json HTTP/1.1" 200 4351
 INFO:__main__:
-get_spacy_model executed in: 3.7591991424560547 seconds
+get_spacy_model executed in: 4.603431940078735 seconds
 
 INFO:__main__:
  [INFO] Running the SpaCy POS tagger for the model en_core_web_sm. 
 
 INFO:__main__:
-get_file_len executed in: 0.042176008224487305 seconds
+get_file_len executed in: 0.04137587547302246 seconds
 
 INFO:__main__:
-spacy_pos_tagger executed in: 384.1822199821472 seconds
+spacy_pos_tagger executed in: 310.6071858406067 seconds
 
 INFO:__main__:[INFO] Reading POS data for evaluation.
 INFO:__main__:[INFO] Classification report for POS predictions.
@@ -256,31 +256,31 @@ INFO:__main__:POS Precision = 0.944
 INFO:__main__:POS F1 = 0.94
 INFO:__main__:POS AUC = 0.971
 INFO:__main__:
-evaluate_pos_run executed in: 49.5827419757843 seconds
+evaluate_pos_run executed in: 42.59191298484802 seconds
 
 INFO:__main__:
-write_conllu_gzip executed in: 0.7059142589569092 seconds
+write_conllu_gzip executed in: 0.7419116497039795 seconds
 
 INFO:__main__:
-get_file_len executed in: 0.10093092918395996 seconds
+get_file_len executed in: 0.10272216796875 seconds
 
 INFO:__main__:
-spacy_pos_tagger executed in: 874.7163877487183 seconds
+spacy_pos_tagger executed in: 876.3363811969757 seconds
 
 INFO:__main__:
-write_conllu_gzip executed in: 3.112431049346924 seconds
+write_conllu_gzip executed in: 1.8039209842681885 seconds
 
 INFO:__main__:
  [INFO] Running the SpaCy NER tagger for the model en_core_web_sm. 
 
 INFO:__main__:
-get_file_len executed in: 0.04541635513305664 seconds
+get_file_len executed in: 0.039084672927856445 seconds
 
 INFO:__main__:
-spacy_ner_tagger executed in: 354.3255760669708 seconds
+spacy_ner_tagger executed in: 280.31958413124084 seconds
 
 INFO:__main__:
-write_conllu_gzip executed in: 1.5895066261291504 seconds
+write_conllu_gzip executed in: 1.1796510219573975 seconds
 
 INFO:__main__:[INFO] Classification report for NER predictions.
 INFO:__main__:              precision    recall  f1-score   support
@@ -336,16 +336,16 @@ INFO:__main__:NER Precision = 0.935
 INFO:__main__:NER F1 = 0.336
 INFO:__main__:NER AUC = 0.874
 INFO:__main__:
-evaluate_ner_run executed in: 9.241048097610474 seconds
+evaluate_ner_run executed in: 11.324939012527466 seconds
 
 INFO:__main__:
  [INFO] Running the SpaCy NER tagger for the model en_core_web_sm with tag correction. 
 
 INFO:__main__:
-fix_default_ner_tags executed in: 0.8870437145233154 seconds
+fix_default_ner_tags executed in: 0.8619880676269531 seconds
 
 INFO:__main__:
-write_conllu_gzip executed in: 1.4495642185211182 seconds
+write_conllu_gzip executed in: 1.2679049968719482 seconds
 
 INFO:__main__:[INFO] Classification report for NER predictions.
 INFO:__main__:              precision    recall  f1-score   support
@@ -401,40 +401,40 @@ INFO:__main__:NER Precision = 0.831
 INFO:__main__:NER F1 = 0.769
 INFO:__main__:NER AUC = 0.887
 INFO:__main__:
-evaluate_ner_run executed in: 8.476576089859009 seconds
+evaluate_ner_run executed in: 6.944997072219849 seconds
 
 INFO:__main__:
  [INFO] Running the SpaCy NER tagger for the model en_core_web_sm for holdout set. 
 
 INFO:__main__:
-get_file_len executed in: 0.11236286163330078 seconds
+get_file_len executed in: 0.3013150691986084 seconds
 
 INFO:__main__:
-spacy_ner_tagger executed in: 864.8771300315857 seconds
+spacy_ner_tagger executed in: 691.5497081279755 seconds
 
 INFO:__main__:
-write_conllu_gzip executed in: 3.758100986480713 seconds
+write_conllu_gzip executed in: 3.3869121074676514 seconds
 
 INFO:__main__:
  [INFO] Running the SpaCy NER tagger for the model en_core_web_sm for holdout set. 
 
 INFO:__main__:
-fix_default_ner_tags executed in: 2.7399611473083496 seconds
+fix_default_ner_tags executed in: 2.050076723098755 seconds
 
 INFO:__main__:
-write_conllu_gzip executed in: 3.9995510578155518 seconds
+write_conllu_gzip executed in: 3.1793179512023926 seconds
 
 INFO:__main__:
  Running my NER tagger. 
 
 INFO:__main__:
-get_file_len executed in: 0.04926896095275879 seconds
+get_file_len executed in: 0.03847670555114746 seconds
 
 INFO:__main__:
-spacy_ner_tagger executed in: 141.15520906448364 seconds
+spacy_ner_tagger executed in: 89.96774888038635 seconds
 
 INFO:__main__:
-write_conllu_gzip executed in: 1.1568541526794434 seconds
+write_conllu_gzip executed in: 1.1551671028137207 seconds
 
 INFO:__main__:[INFO] Classification report for NER predictions.
 INFO:__main__:              precision    recall  f1-score   support
@@ -490,14 +490,14 @@ INFO:__main__:NER Precision = 0.956
 INFO:__main__:NER F1 = 0.956
 INFO:__main__:NER AUC = 0.976
 INFO:__main__:
-evaluate_ner_run executed in: 9.179833889007568 seconds
+evaluate_ner_run executed in: 7.5520689487457275 seconds
 
 INFO:__main__:
-get_file_len executed in: 0.09061217308044434 seconds
+get_file_len executed in: 0.08075594902038574 seconds
 
 INFO:__main__:
-spacy_ner_tagger executed in: 257.61394786834717 seconds
+spacy_ner_tagger executed in: 244.3546211719513 seconds
 
 INFO:__main__:
-write_conllu_gzip executed in: 3.0727920532226562 seconds
+write_conllu_gzip executed in: 3.354416847229004 seconds
 
