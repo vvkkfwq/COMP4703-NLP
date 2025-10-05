@@ -5,11 +5,13 @@ created: 2024-09-08T02:57:54 (UTC +10:00)
 # What is LlamaIndex?: How It Works, and Optimizing Data Query
 
 > ## Excerpt
+>
 > Welcome to our guide of LlamaIndex!
 
 In simple terms, LlamaIndex is a handy tool that acts as a bridge between your custom data and large language models (LLMs) like GPT-4 which are powerful models capable of understanding human-like text. Whether you have data stored in APIs, databases, or in PDFs, LlamaIndex makes it easy to bring that data into conversation with these smart machines. This bridge-building makes your data more accessible and usable, paving the way for creating powerful custom L
 
 ---
+
 Welcome to our guide of LlamaIndex!
 
 In simple terms, LlamaIndex is a handy tool that acts as a bridge between your custom data and large language models (LLMs) like GPT-4 which are powerful models capable of understanding human-like text. Whether you have data stored in APIs, databases, or in PDFs, LlamaIndex makes it easy to bring that data into conversation with these smart machines. This bridge-building makes your data more accessible and usable, paving the way for creating powerful custom LLM applications and workflows.
@@ -22,10 +24,10 @@ While discussing LlamaIndex's power to bridge data and LLMs, it's worth noting h
 
 Initially known as GPT Index, LlamaIndex has evolved into an indispensable ally for developers. It's like a multi-tool that helps in various stages of working with data and [Large Language Models](https://nanonets.com/blog/what-are-large-language-models/) -
 
--   Firstly, it helps in 'ingesting' data, which means getting the data from its original source into the system.
--   Secondly, it helps in 'structuring' that data, which means organizing it in a way that the language models can easily understand.
--   Thirdly, it aids in 'retrieval', which means finding and fetching the right pieces of data when needed.
--   Lastly, it simplifies 'integration', making it easier to meld your data with various application frameworks.
+- Firstly, it helps in 'ingesting' data, which means getting the data from its original source into the system.
+- Secondly, it helps in 'structuring' that data, which means organizing it in a way that the language models can easily understand.
+- Thirdly, it aids in 'retrieval', which means finding and fetching the right pieces of data when needed.
+- Lastly, it simplifies 'integration', making it easier to meld your data with various application frameworks.
 
 When we dive a little deeper into the mechanics of LlamaIndex, we find three main heroes doing the heavy lifting.
 
@@ -41,9 +43,9 @@ LlamaIndex is your go-to platform for creating robust applications powered by La
 
 RAG mechanism amplifies the prowess of LLMs with the essence of your custom data. Components of an RAG application or workflow -
 
--   **Knowledge Base (Input)**: The knowledge base is like a library filled with useful information such as FAQs, manuals, and other relevant documents. When a question is asked, this is where the system looks to find the answer.
--   **Trigger/Query (Input)**: This is the spark that gets things going. Typically, it's a question or request from a customer that signals the system to spring into action.
--   **Task/Action (Output)**: After understanding the trigger or query, the system then performs a certain task to address it. For instance, if it's a question, the system will work on providing an answer, or if it's a request for a specific action, it will carry out that action accordingly.
+- **Knowledge Base (Input)**: The knowledge base is like a library filled with useful information such as FAQs, manuals, and other relevant documents. When a question is asked, this is where the system looks to find the answer.
+- **Trigger/Query (Input)**: This is the spark that gets things going. Typically, it's a question or request from a customer that signals the system to spring into action.
+- **Task/Action (Output)**: After understanding the trigger or query, the system then performs a certain task to address it. For instance, if it's a question, the system will work on providing an answer, or if it's a request for a specific action, it will carry out that action accordingly.
 
 Based on the context of our blog, we will need to implement the following two stages using Llamaindex to provide the two inputs to our RAG mechanism -
 
@@ -56,9 +58,9 @@ Let's take a closer look at these stages under the magnifying lens of LlamaIndex
 
 LlamaIndex equips you with a suite of tools to shape your knowledge base:
 
--   **Data Connectors:** These entities, also known as Readers, [ingest data](https://nanonets.com/blog/optimize-data-workflows/) from diverse sources and formats into a unified Document representation.
--   **Documents / Nodes:** A Document is your container for data, whether it springs from a [PDF](https://nanonets.com/blog/how-to-ocr-pdf/), an API, or a database. A Node, on the other hand, is a snippet of a Document, enriched with metadata and relationships, paving the way for precise retrieval operations.
--   **Data Indexes:** Post ingestion, LlamaIndex assists in arranging the data into a retrievable format. This process involves parsing, embedding, and metadata inference, and ultimately results in the creation of the knowledge base.
+- **Data Connectors:** These entities, also known as Readers, [ingest data](https://nanonets.com/blog/optimize-data-workflows/) from diverse sources and formats into a unified Document representation.
+- **Documents / Nodes:** A Document is your container for data, whether it springs from a [PDF](https://nanonets.com/blog/how-to-ocr-pdf/), an API, or a database. A Node, on the other hand, is a snippet of a Document, enriched with metadata and relationships, paving the way for precise retrieval operations.
+- **Data Indexes:** Post ingestion, LlamaIndex assists in arranging the data into a retrievable format. This process involves parsing, embedding, and metadata inference, and ultimately results in the creation of the knowledge base.
 
 #### The Querying Stage: Engaging with Your Knowledge
 
@@ -68,21 +70,21 @@ LlamaIndex offers modular constructs to help you use it for Q&A, chatbots, or ag
 
 **These are the primary elements -**
 
--   **Query Engines:** These are your end-to-end conduits for querying your data, taking a natural language query and returning a response along with the referenced context.
--   **Chat Engines:** They elevate the interaction to a conversational level, allowing back-and-forths with your data.
--   **Agents:** Agents are your automated decision-makers, interacting with the world through a toolkit, and manoeuvring through tasks with a dynamic action plan rather than a fixed logic.
+- **Query Engines:** These are your end-to-end conduits for querying your data, taking a natural language query and returning a response along with the referenced context.
+- **Chat Engines:** They elevate the interaction to a conversational level, allowing back-and-forths with your data.
+- **Agents:** Agents are your automated decision-makers, interacting with the world through a toolkit, and manoeuvring through tasks with a dynamic action plan rather than a fixed logic.
 
 **These are few common building blocks of the primary elements present in all of the elements discussed above -**
 
--   **Retrievers:** They dictate the technique of fetching relevant context from the knowledge base against a query. For example, Dense Retrieval against a vector index is a prevalent approach.
--   **Node Postprocessors:** They refine the set of nodes through transformation, filtering, or re-ranking.
--   **Response Synthesizers:** They channel the LLM to generate responses, blending the user query with retrieved text chunks.
+- **Retrievers:** They dictate the technique of fetching relevant context from the knowledge base against a query. For example, Dense Retrieval against a vector index is a prevalent approach.
+- **Node Postprocessors:** They refine the set of nodes through transformation, filtering, or re-ranking.
+- **Response Synthesizers:** They channel the LLM to generate responses, blending the user query with retrieved text chunks.
 
 As we venture into LlamaIndex now, we'll encounter and learn more about the above elements.
 
-___
+---
 
-**All the code examples discussed and the associated sample files used in the blog are present in this github repository.**  
+**All the code examples discussed and the associated sample files used in the blog are present in this github repository.**
 
 [
 
@@ -96,13 +98,13 @@ Contribute to karan-nanonets/llamaindex-guide development by creating an account
 
 ](https://github.com/karan-nanonets/llamaindex-guide "Opens in a new window")
 
-___
+---
 
 **_Automate_** [**_manual tasks_**](https://nanonets.com/blog/ai-data-entry/) **_and workflows with our AI-driven workflow builder, designed by_** [**_Nanonets_**](https://nanonets.com/?utm_souce=blog-intext-links) **_for you and your teams._**
 
 <iframe width="200" height="113" src="https://www.youtube.com/embed/HUOmSDeO0qs?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" title="Nanonets Workflow"></iframe>
 
-___
+---
 
 ### Installation and Setup
 
@@ -114,13 +116,13 @@ pip install llama-index
 
 Then follow either of the two approaches below -
 
--   By default, LlamaIndex uses OpenAI's gpt-3.5-turbo for creating text and text-embedding-ada-002 for fetching and embedding. You need an OpenAI API Key to use these. Get your API key for free by signing up on [OpenAI's website](https://platform.openai.com/playground "Opens in a new window"). Then set your environment variable with the name OPENAI\_API\_KEY in your python file.
+- By default, LlamaIndex uses OpenAI's gpt-3.5-turbo for creating text and text-embedding-ada-002 for fetching and embedding. You need an OpenAI API Key to use these. Get your API key for free by signing up on [OpenAI's website](https://platform.openai.com/playground "Opens in a new window"). Then set your environment variable with the name OPENAI_API_KEY in your python file.
 
 ```python
 import os os.environ["OPENAI_API_KEY"] = "your_api_key"
 ```
 
--   If you'd rather not use OpenAI, the system will switch to using LlamaCPP and llama2-chat-13B for creating text and BAAI/bge-small-en for fetching and embedding. These all work offline. To set up LlamaCPP, follow its setup guide [here](https://docs.llamaindex.ai/en/stable/examples/llm/llama_2_llama_cpp.html "Opens in a new window"). This will need about 11.5GB of memory on both your CPU and GPU. Then, to use local embedding, install this:
+- If you'd rather not use OpenAI, the system will switch to using LlamaCPP and llama2-chat-13B for creating text and BAAI/bge-small-en for fetching and embedding. These all work offline. To set up LlamaCPP, follow its setup guide [here](https://docs.llamaindex.ai/en/stable/examples/llm/llama_2_llama_cpp.html "Opens in a new window"). This will need about 11.5GB of memory on both your CPU and GPU. Then, to use local embedding, install this:
 
 ```
 pip install sentence-transformers
@@ -154,15 +156,15 @@ A hub of data loaders for GPT Index and LangChain
 
 The variety of data connectors here is pretty exhaustive, some of which include:
 
--   **SimpleDirectoryReader**: Supports a broad range of file types (.pdf, .jpg, .png, .docx, etc.) from a local file directory.
--   **NotionPageReader**: Ingests data from Notion.
--   **SlackReader**: Imports data from Slack.
--   **AirtableReader**: Imports data from Airtable.
--   **ApifyActor**: Capable of web crawling, scraping, text extraction, and file downloading.
+- **SimpleDirectoryReader**: Supports a broad range of file types (.pdf, .jpg, .png, .docx, etc.) from a local file directory.
+- **NotionPageReader**: Ingests data from Notion.
+- **SlackReader**: Imports data from Slack.
+- **AirtableReader**: Imports data from Airtable.
+- **ApifyActor**: Capable of web crawling, scraping, text extraction, and file downloading.
 
 **How to find the right data connector?**
 
--   First look up and check if a relevant data connector is listed in Llamaindex documentation here -
+- First look up and check if a relevant data connector is listed in Llamaindex documentation here -
 
 [
 
@@ -170,11 +172,9 @@ Module Guides - LlamaIndex 🦙 0.8.45.post1
 
 ![](https://docs.llamaindex.ai/favicon.ico)LlamaIndex 🦙 0.8.45.post1
 
-
-
 ](https://docs.llamaindex.ai/en/stable/core_modules/data_modules/connector/modules.html "Opens in a new window")
 
--   **If not, then identify the relevant data connector on Llamahub**
+- **If not, then identify the relevant data connector on Llamahub**
 
 ![](https://nanonets.com/blog/content/images/2023/10/image-14.png)
 
@@ -194,13 +194,13 @@ The given example below loads the wikipedia pages about a few countries from aro
 
 ![](https://nanonets.com/blog/content/images/2023/10/image-16.png)
 
-___
+---
 
 **_Automate manual tasks and workflows with our AI-driven workflow builder, designed by_** [**_Nanonets_**](https://nanonets.com/?utm_souce=blog-intext-links) **_for you and your teams._**
 
 <iframe width="200" height="113" src="https://www.youtube.com/embed/HUOmSDeO0qs?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" title="Nanonets Workflow"></iframe>
 
-___
+---
 
 ## Creating LlamaIndex Nodes
 
@@ -222,10 +222,10 @@ In this snippet, `SimpleNodeParser.from_defaults()` initializes a parser with de
 
 Various customization options include:
 
--   `text_splitter` (default: TokenTextSplitter)
--   `include_metadata` (default: True)
--   `include_prev_next_rel` (default: True)
--   `metadata_extractor` (default: None)
+- `text_splitter` (default: TokenTextSplitter)
+- `include_metadata` (default: True)
+- `include_prev_next_rel` (default: True)
+- `metadata_extractor` (default: None)
 
 ##### **Text Splitter Customization**
 
@@ -275,7 +275,7 @@ Let us create basic nodes for the PDF and Wikipedia page documents we have creat
 
 The core essence of LlamaIndex lies in its ability to build structured indices over ingested data, represented as either Documents or Nodes. This indexing facilitates efficient querying over the data. Let's delve into how to build indices with both Document and Node objects, and what happens under the hood during this process.
 
--   **Building Index from Documents**
+- **Building Index from Documents**
 
 Here's how you can build an index directly from Documents using the VectorStoreIndex:
 
@@ -285,10 +285,10 @@ from llama_index import VectorStoreIndex # Assuming docs is your list of Documen
 
 Different types of indices in LlamaIndex handle data in distinct ways:
 
--   **Summary Index**: Stores Nodes as a sequential chain, and during query time, all Nodes are loaded into the Response Synthesis module if no other query parameters are specified.
--   **Vector Store Index**: Stores each Node and a corresponding embedding in a Vector Store, and queries involve fetching the top-k most similar Nodes.
--   **Tree Index**: Builds a hierarchical tree from a set of Nodes, and queries involve traversing from root nodes down to leaf nodes.
--   **Keyword Table Index**: Extracts keywords from each Node to build a mapping, and queries extract relevant keywords to fetch corresponding Nodes.
+- **Summary Index**: Stores Nodes as a sequential chain, and during query time, all Nodes are loaded into the Response Synthesis module if no other query parameters are specified.
+- **Vector Store Index**: Stores each Node and a corresponding embedding in a Vector Store, and queries involve fetching the top-k most similar Nodes.
+- **Tree Index**: Builds a hierarchical tree from a set of Nodes, and queries involve traversing from root nodes down to leaf nodes.
+- **Keyword Table Index**: Extracts keywords from each Node to build a mapping, and queries extract relevant keywords to fetch corresponding Nodes.
 
 To choose your index, you should carefully evaluate the module guides [here](https://docs.llamaindex.ai/en/stable/core_modules/data_modules/index/modules.html "Opens in a new window") and make a choice here according to your use case.
 
@@ -296,14 +296,14 @@ To choose your index, you should carefully evaluate the module guides [here](htt
 
 1.  The Documents are parsed into Node objects, which are lightweight abstractions over text strings that additionally keep track of metadata and relationships.
 2.  Index-specific computations are performed to add Node into the index data structure. For example:
-    -   For a vector store index, an embedding model is called (either via API or locally) to compute embeddings for the Node objects.
-    -   For a document summary index, an LLM (Language Model) is called to generate a summary.
+    - For a vector store index, an embedding model is called (either via API or locally) to compute embeddings for the Node objects.
+    - For a document summary index, an LLM (Language Model) is called to generate a summary.
 
 Let us create an index for the PDF File using the above code.
 
 ![](https://nanonets.com/blog/content/images/2023/10/image-8.png)
 
--   **Building Index from Nodes**
+- **Building Index from Nodes**
 
 You can also build an index directly from Node objects, following the parsing of Documents into Nodes or manual Node creation:
 
@@ -343,15 +343,15 @@ For example, we can save the PDF index as follows -
 
 At its core, LlamaIndex provides more customizable storage components enabling users to specify where various data elements are stored. These components include:
 
--   **Document Stores:** The repositories for storing ingested documents represented as Node objects.
--   **Index Stores:** The places where index metadata are kept.
--   **Vector Stores:** The storages for holding embedding vectors.
+- **Document Stores:** The repositories for storing ingested documents represented as Node objects.
+- **Index Stores:** The places where index metadata are kept.
+- **Vector Stores:** The storages for holding embedding vectors.
 
 LlamaIndex is versatile in its storage backend support, with confirmed support for:
 
--   Local filesystem (as seen in the basic _persistence_ example)
--   AWS S3
--   Cloudflare R2
+- Local filesystem (as seen in the basic _persistence_ example)
+- AWS S3
+- Cloudflare R2
 
 These backends are facilitated through the use of the `fsspec` library, which allows for a variety of storage backends.
 
@@ -393,7 +393,7 @@ We can try this out on our PDF index -
 
 ![](https://nanonets.com/blog/content/images/2023/10/image-21.png)
 
-By default, index.as\_query\_engine() creates a query engine with the specified default settings in LlamaIndex.
+By default, index.as_query_engine() creates a query engine with the specified default settings in LlamaIndex.
 
 You can choose your own query engine based on your use case from the list here and use that to query your index -
 
@@ -402,8 +402,6 @@ You can choose your own query engine based on your use case from the list here a
 Module Guides - LlamaIndex 🦙 0.8.46
 
 ![](https://docs.llamaindex.ai/favicon.ico)LlamaIndex 🦙 0.8.46
-
-
 
 ](https://docs.llamaindex.ai/en/stable/core_modules/query_modules/query_engine/modules.html "Opens in a new window")
 
@@ -450,13 +448,13 @@ And the final response given by the engine can now be printed.
 
 ![](https://nanonets.com/blog/content/images/2023/10/image-26.png)
 
-___
+---
 
 **_Automate manual tasks and workflows with our AI-driven workflow builder, designed by_** [**_Nanonets_**](https://nanonets.com/?utm_souce=blog-intext-links) **_for you and your teams._**
 
 <iframe width="200" height="113" src="https://www.youtube.com/embed/HUOmSDeO0qs?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" title="Nanonets Workflow"></iframe>
 
-___
+---
 
 #### **<u>Low-Level Composition API</u>**
 
@@ -476,8 +474,6 @@ Module Guides - LlamaIndex 🦙 0.8.46
 
 ![](https://docs.llamaindex.ai/favicon.ico)LlamaIndex 🦙 0.8.46
 
-
-
 ](https://docs.llamaindex.ai/en/stable/core_modules/query_modules/retriever/modules.html "Opens in a new window")
 
 #### **Node Postprocessors**
@@ -487,37 +483,51 @@ They refine the set of nodes through transformation, filtering, or re-ranking.
 **Summary of LlamaIndex Postprocessors:**
 
 1.  **SimilarityPostprocessor:**
-    -   Removes nodes below a certain similarity score.
-    -   Set threshold using `similarity_cutoff`.
+    - Removes nodes below a certain similarity score.
+    - Set threshold using `similarity_cutoff`.
 2.  **KeywordNodePostprocessor:**
-    -   Filters nodes based on keyword inclusion or exclusion.
-    -   Use `required_keywords` and `exclude_keywords`.
+    - Filters nodes based on keyword inclusion or exclusion.
+    - Use `required_keywords` and `exclude_keywords`.
 3.  **MetadataReplacementPostProcessor:**
-    -   Replaces node content with data from its metadata.
-    -   Works well with `SentenceWindowNodeParser`.
+    - Replaces node content with data from its metadata.
+    - Works well with `SentenceWindowNodeParser`.
 4.  **LongContextReorder:**
-    -   Addresses models' difficulty with extended contexts. It reorders nodes, which benefits situations where a large number of top results are essential.
+    - Addresses models' difficulty with extended contexts. It reorders nodes, which benefits situations where a large number of top results are essential.
 5.  **SentenceEmbeddingOptimizer:**
-    -   Removes irrelevant sentences based on embeddings.
-    -   Choose either `percentile_cutoff` or `threshold_cutoff` for relevance.
+    - Removes irrelevant sentences based on embeddings.
+    - Choose either `percentile_cutoff` or `threshold_cutoff` for relevance.
 6.  **CohereRerank:**
-    -   Uses the Cohere ReRank to reorder nodes, giving back the top N results.
+    - Uses the Cohere ReRank to reorder nodes, giving back the top N results.
 7.  **SentenceTransformerRerank:**
-    -   Uses sentence-transformer cross-encoders to reorder nodes, yielding the top N nodes.
-    -   Various models available with different speed/accuracy trade-offs.
+    - Uses sentence-transformer cross-encoders to reorder nodes, yielding the top N nodes.
+    - Various models available with different speed/accuracy trade-offs.
 8.  **LLMRerank:**
-    -   Uses an LLM to reorder nodes, providing a relevance score for each.
+    - Uses an LLM to reorder nodes, providing a relevance score for each.
 9.  **FixedRecencyPostprocessor:**
-    -   Returns nodes sorted by date. Requires a date field in node metadata.
-10.  **EmbeddingRecencyPostprocessor:**
+    - Returns nodes sorted by date. Requires a date field in node metadata.
+10. **EmbeddingRecencyPostprocessor:**
+
+
     -   Ranks nodes by date, but also removes older similar nodes based on embedding similarity.
-11.  **TimeWeightedPostprocessor:**
+
+11. **TimeWeightedPostprocessor:**
+
+
     -   Reranks nodes with a bias towards information not recently returned.
-12.  **PIINodePostprocessor (Beta):**
+
+12. **PIINodePostprocessor (Beta):**
+
+
     -   Removes personally identifiable information. Can utilize either a local LLM or a NER model.
-13.  **PrevNextNodePostprocessor (Beta):**
+
+13. **PrevNextNodePostprocessor (Beta):**
+
+
     -   Based on node relationships, retrieves nodes that come before, after, or both in sequence.
-14.  **AutoPrevNextNodePostprocessor (Beta):**
+
+14. **AutoPrevNextNodePostprocessor (Beta):**
+
+
     -   Similar to the above, but lets the LLM decide the relationship direction.
 
 **Note:** Many of these postprocessors come with detailed notebook guides for further instructions. [Read them here.](https://docs.llamaindex.ai/en/stable/core_modules/query_modules/node_postprocessors/modules.html "Opens in a new window")
@@ -538,13 +548,13 @@ Think of the whole process in the query engine as a factory line:
 
 Response synthesizers come in various styles:
 
--   **Refine:** This method goes through each text piece, refining the answer bit by bit.
--   **Compact:** A shorter version of 'Refine.' It bunches the texts together, so there are fewer steps to refine.
--   **Tree Summarize:** Imagine taking many small answers, combining them, and summarizing again until you have one main answer.
--   **Simple Summarize:** Just cuts the text pieces to fit and gives a quick summary.
--   **No Text:** This one doesn't give you an answer but tells you which text pieces it would have used.
--   **Accumulate:** Think of this as getting a bunch of mini-answers for each text piece and then sticking them together.
--   **Compact Accumulate:** A mixed bag of 'Compact' and 'Accumulate.'
+- **Refine:** This method goes through each text piece, refining the answer bit by bit.
+- **Compact:** A shorter version of 'Refine.' It bunches the texts together, so there are fewer steps to refine.
+- **Tree Summarize:** Imagine taking many small answers, combining them, and summarizing again until you have one main answer.
+- **Simple Summarize:** Just cuts the text pieces to fit and gives a quick summary.
+- **No Text:** This one doesn't give you an answer but tells you which text pieces it would have used.
+- **Accumulate:** Think of this as getting a bunch of mini-answers for each text piece and then sticking them together.
+- **Compact Accumulate:** A mixed bag of 'Compact' and 'Accumulate.'
 
 If you're tech-savvy, you can even build your custom synthesizer. The primary job of any synthesizer is to take a question and some text pieces and give back a string of text as an answer.
 
@@ -632,7 +642,7 @@ We now define the structured LLM and the response format as shown in the documen
 
 ![](https://nanonets.com/blog/content/images/2023/10/image-36.png)
 
-We define the output parser and it's query template using the response\_schemas defined above.
+We define the output parser and it's query template using the response_schemas defined above.
 
 ![](https://nanonets.com/blog/content/images/2023/10/image-37.png)
 
@@ -646,13 +656,13 @@ Running any query now fetches a structured json output!
 
 Structured outputs with LlamaIndex make parsing and downstream processes a breeze, ensuring you get the most out of your LLMs.
 
-___
+---
 
 **_Automate manual tasks and workflows with our AI-driven workflow builder, designed by_** [**_Nanonets_**](https://nanonets.com/?utm_souce=blog-intext-links) **_for you and your teams._**
 
 <iframe width="200" height="113" src="https://www.youtube.com/embed/HUOmSDeO0qs?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" title="Nanonets Workflow"></iframe>
 
-___
+---
 
 ## Using Index to Chat with Data
 
@@ -728,7 +738,7 @@ Implementation Example:
 
 Configuration of a Chat Engine is akin to that of a Query Engine. However, the Chat Engine offers different modes to tailor the conversation according to your needs.
 
--   **High-Level API**
+- **High-Level API**
 
 ```python
 chat_engine = index.as_chat_engine( chat_mode='condense_question', verbose=True )
@@ -748,7 +758,7 @@ Different chat modes are available:
 
 `openai`: Forces an OpenAI data agent.
 
--   **Low-Level Composition API**
+- **Low-Level Composition API**
 
 For granular control, the low-level composition API allows explicit construction of the ChatEngine object:
 
@@ -796,10 +806,9 @@ But what exactly is a tool in this context? Think of Tools as API interfaces, ta
 
 **Core Concepts:**
 
--   **Tool**: At its basic level, a Tool comes with a generic interface and some fundamental metadata like name, description, and function schema.
--   **Tool Spec**: This dives deeper into the API details. It outlines a comprehensive service API specification, ready to be translated into an assortment of Tools.
+- **Tool**: At its basic level, a Tool comes with a generic interface and some fundamental metadata like name, description, and function schema.
+- **Tool Spec**: This dives deeper into the API details. It outlines a comprehensive service API specification, ready to be translated into an assortment of Tools.
 
-  
 There are different flavors of Tools available:
 
 1.  **FunctionTool**: Transform any user-defined function into a Tool. Plus, it can smartly infer the function's schema.
@@ -884,12 +893,12 @@ When we visit our Gmail Draft box, we can see the draft that the agent created!
 
 In fact, we could have also scheduled this script to run daily and instructed the Gmail agent to send these emails directly instead of saving them as drafts, resulting in a end-to-end fully automated workflow that -
 
--   connects with hubspot daily to fetch yesterday's leads
--   uses the domain from the email addresses to create personalized follow up emails
--   sends the emails from your Gmail account directly.
+- connects with hubspot daily to fetch yesterday's leads
+- uses the domain from the email addresses to create personalized follow up emails
+- sends the emails from your Gmail account directly.
 
 Thus, in addition to querying and chatting with data, LlamaIndex can be also be used to fully execute tasks by interacting with applications and data sources.
 
 And that's a wrap!
-___
 
+---

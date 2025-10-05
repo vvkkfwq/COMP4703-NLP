@@ -1,6 +1,6 @@
 # Install Instructions
 
-If you want to set up your own staging, environment, run the commands below.  You should not need to do this if you use the GPU environment. It has been initialised with everything you need.  If there is a library not installed, you can install it into your base environment on the GPU server and it will be persistent.
+If you want to set up your own staging, environment, run the commands below. You should not need to do this if you use the GPU environment. It has been initialised with everything you need. If there is a library not installed, you can install it into your base environment on the GPU server and it will be persistent.
 
 If you have your own GPU, or want to create your own staging environment, use the commands below.
 
@@ -17,15 +17,17 @@ pip install tokenizers sentence-transformers safetensors pandas psutil pyarrow
 pip install "huggingface_hub[cli]"
 ```
 
-If the FlagEmbedding install fails, you can try: 
+If the FlagEmbedding install fails, you can try:
+
 ```bash
 pip install git+https://github.com/FlagOpen/FlagEmbedding.git
 ```
 
 Or if all else fails, do you can try:
+
 ```bash
-git clone https://github.com/FlagOpen/FlagEmbedding.git 
-cd FlagEmbedding 
+git clone https://github.com/FlagOpen/FlagEmbedding.git
+cd FlagEmbedding
 pip install -e .
 ```
 
@@ -40,10 +42,12 @@ pip install -U torch torchvision torchaudio --index-url https://download.pytorch
 ```
 
 instead of:
+
 ```bash
 pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 ```
-The example code is intrumented with a Boolean ```GPU = True```. Set this value to False to use a CPU only environment. Just remember to reenable it when you run your code on the GPU or you will take 10x longer to run anything. I also instrumented the code to dump out the maximum memory used when ran, and for Llama2 in the example_rag.py file, it used around 13GB. So, you might be able to barely get it to run with 16GB of RAM on a laptop, but I expect that you really want at least 32GB. The other alternative is to just try to use a 1 or 2B parameter model in your local environment, and move to the larger ones once you are read to run on the GPU.
+
+The example code is intrumented with a Boolean `GPU = True`. Set this value to False to use a CPU only environment. Just remember to reenable it when you run your code on the GPU or you will take 10x longer to run anything. I also instrumented the code to dump out the maximum memory used when ran, and for Llama2 in the example_rag.py file, it used around 13GB. So, you might be able to barely get it to run with 16GB of RAM on a laptop, but I expect that you really want at least 32GB. The other alternative is to just try to use a 1 or 2B parameter model in your local environment, and move to the larger ones once you are read to run on the GPU.
 
 # Using a GPU on Windows 11
 
@@ -71,9 +75,9 @@ sh Miniconda3-latest-Linux-x86_64.sh
 
 Now create your conda environment as above.
 
-Make sure you use ``export CUDA_VISIBLE_DEVICES=0`` before running a job.
+Make sure you use `export CUDA_VISIBLE_DEVICES=0` before running a job.
 If you have an AMD GPU, you will need to install pytorch using the
-ROCm option.  I have never tested this as I do not have a discrete AMD GPU
+ROCm option. I have never tested this as I do not have a discrete AMD GPU
 available to test it, but it should work in theory.
 
 Finally, here is a very simple example script called example_run.sh which
