@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Output files
+output/
+*.json.bak
+results/
+
+# Model caches and checkpoints
+*.pt
+*.pth
+*.bin
+*.ckpt
+storage/
+*.index
+
+# HuggingFace cache (if local)
+.cache/
+huggingface/
+
+# Large data files (uncomment if needed)
+# *.parquet
+# *.arrow
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# System files
+*.swp
+*.swo
+*~
+.Spotlight-V100
+.Trashes
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+logs/
