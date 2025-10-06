@@ -157,5 +157,6 @@ def run_evaluation(predictions, gold_labels):
 if __name__ == '__main__':
     # prediction_file = 'output/llama2.json'
     prediction_file = sys.argv[1] 
-    gold_labels = 'data/rag.json'
+    # gold_labels = 'data/rag.json'
+    gold_labels = 'data/sample-rag.json'
     run_evaluation(prediction_file, gold_labels)

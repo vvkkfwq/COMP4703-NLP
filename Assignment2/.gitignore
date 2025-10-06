@@ -33,9 +33,7 @@ wheels/
 .vscode/
 
 # Output files
-output/
 *.json.bak
-results/
 
 # Model caches and checkpoints
 *.pt

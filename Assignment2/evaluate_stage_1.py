@@ -77,5 +77,5 @@ def main_eval(file_name):
 
 if __name__ == '__main__':
     stage_one_filename = 'output/llm-embedder-ranker.json'
-    #stage_one_filename = 'bge-reranker-large.json'
+    #stage_one_filename = 'output/bge-reranker-large.json'
     main_eval(stage_one_filename)
