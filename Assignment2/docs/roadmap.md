@@ -52,13 +52,13 @@
   - 运行 `nvidia-smi` 确认 GPU 可用
   - 查看预装模型: `ls $HOME/.cache/huggingface/hub`
 
-- [ ] **Task 1.4**: 理解数据结构
+- [x] **Task 1.4**: 理解数据结构
 
   - 查看 `data/sample-corpus.json` 结构
   - 查看 `data/sample-rag.json` 查询格式
   - 理解金标准答案格式
 
-- [ ] **Task 1.5**: 测试示例代码
+- [x] **Task 1.5**: 测试示例代码
 
   ```bash
   # 使用样本数据测试
