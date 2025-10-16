@@ -6,7 +6,7 @@ conda activate NLPA2
 export PATH=/conda/envs/NLPA2/bin:$PATH
 
 PYTHON="/conda/envs/NLPA2/bin/python"
-WORKING_DIR="$HOME/COMP4703_NLP/A2-v2.0"
+WORKING_DIR="$HOME/COMP4703-NLP/A2-v2.0"
 LOGFILE="${WORKING_DIR}/run.log"
 
 # Read STAGING status from config.py
