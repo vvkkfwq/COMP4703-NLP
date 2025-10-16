@@ -67,6 +67,3 @@ huggingface/
 .env
 .env.local
 
-# Logs
-*.log
-logs/

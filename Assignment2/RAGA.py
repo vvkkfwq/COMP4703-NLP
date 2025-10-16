@@ -5,12 +5,11 @@ from typing import Any, Generator, List, Optional
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 from llama_index.schema import Document
+from config import is_STAGING, use_GPU
 
-GPU = True
-# GPU = False
+GPU = use_GPU
 
-STAGING = True
-# STAGING = False
+STAGING = is_STAGING
 
 if GPU:
     torch.set_default_dtype(torch.float16)
@@ -212,7 +211,6 @@ if __name__ == "__main__":
     model_name = "meta-llama/Llama-2-7b-chat-hf"
     output_file = "output/llama2.json"
     input_stage_1 = "output/llm-embedder-ranker.json"
-    # input_stage_1 = 'bge-reranker-base.json'
     initialise_and_run_model(output_file, input_stage_1, model_name)
 
     if STAGING:

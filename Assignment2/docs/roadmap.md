@@ -118,14 +118,14 @@
 
 **预计时间**: 6-8 小时**GPU 时间**: 3 小时
 
-- [ ] **Task 3.1**: 创建 4 个检索算法变体
+- [x] **Task 3.1**: 创建 4 个检索算法变体
 
-  - [ ] 复制并修改为 `rankerA.py` (例如: BAAI/bge-base-en-v1.5)
-  - [ ] 复制并修改为 `rankerB.py` (例如: sentence-transformers/all-MiniLM-L6-v2)
-  - [ ] 复制并修改为 `rankerC.py` (例如: intfloat/e5-base-v2)
-  - [ ] 复制并修改为 `rankerD.py` (例如: BAAI/bge-small-en-v1.5)
+  - [x] 复制并修改为 `rankerA.py` (例如: BAAI/bge-base-en-v1.5)
+  - [x] 复制并修改为 `rankerB.py` (例如: sentence-transformers/all-MiniLM-L6-v2)
+  - [x] 复制并修改为 `rankerC.py` (例如: intfloat/e5-base-v2)
+  - [x] 复制并修改为 `rankerD.py` (例如: BAAI/bge-small-en-v1.5)
 
-- [ ] **Task 3.2**: 使用样本数据测试所有 ranker
+- [x] **Task 3.2**: 使用样本数据测试所有 ranker
 
   ```bash
   python rankerA.py  # 测试并记录时间
