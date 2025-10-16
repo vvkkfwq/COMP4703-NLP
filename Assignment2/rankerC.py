@@ -200,7 +200,7 @@ if __name__ == "__main__":
     if STAGING:
         output_name = "output/staging/bge-large-en-v1.5-ranker.json"
     else:
-        output_name = "output/product/bge-large-en-v1.5-ranker.json"
+        output_name = "output/production/bge-large-en-v1.5-ranker.json"
 
     start_retrival(corpus, queries, rank_model_name, output_name)
 

@@ -200,7 +200,7 @@ if __name__ == "__main__":
     if STAGING:
         output_name = "output/staging/llm-embedder-ranker.json"
     else:
-        output_name = "output/product/llm-embedder-ranker.json"
+        output_name = "output/production/llm-embedder-ranker.json"
 
     start_retrival(corpus, queries, rank_model_name, output_name)
 

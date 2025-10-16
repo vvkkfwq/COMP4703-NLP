@@ -200,7 +200,7 @@ if __name__ == "__main__":
     if STAGING:
         output_name = "output/staging/multilingual-e5-large-ranker.json"
     else:
-        output_name = "output/product/multilingual-e5-large-ranker.json"
+        output_name = "output/production/multilingual-e5-large-ranker.json"
 
     start_retrival(corpus, queries, rank_model_name, output_name)
 

@@ -210,7 +210,7 @@ if __name__ == "__main__":
     if STAGING:
         output_name = "output/staging/all-MiniLM-L6-reranker.json"
     else:
-        output_name = "output/product/all-MiniLM-L6-reranker.json"
+        output_name = "output/production/all-MiniLM-L6-reranker.json"
 
     start_retrival(corpus, queries, rank_model_name, rerank_model_name, output_name)
 
