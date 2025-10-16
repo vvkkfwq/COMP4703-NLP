@@ -1,6 +1,43 @@
-For file: output/all-MiniLM-L6-v2-ranker.json
-Hits@10: 0.8000
-Hits@4: 0.8000
-MAP@10: 0.2267
-MRR@10: 0.4667
---------------------
+Remove save file if exists.
+File output/staging/all-MiniLM-L6-v2-ranker.json removed successfully.
+LLM is explicitly disabled. Using MockLLM.
+Corpus Data
+--------------------------
+Doc ID: 1cfd1132-3098-4219-899a-8fbb3ee6bfe9
+Text: SBF’s trial has started, this is how he and FTX got here  The
+highly anticipated criminal trial for Sam Bankman-Fried, former CEO of
+bankrupt crypto exchange FTX, started Tuesday to determine whether
+he’s guilty of seven counts of fraud and conspiracy. And as one former
+federal prosecutor put it: “The odds seem to be stacked against him at
+this ...
+--------------------------
+Initialising pipeline
+LLM sees:
+ [Excerpt from document]
+title: SBF’s trial starts soon, but how did he — and FTX — get here?
+published_at: 2023-10-01T14:00:29+00:00
+source: TechCrunch
+Excerpt:
+-----
+SBF’s trial has started, this is how he and FTX got here
+
+The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy. And as one former federal prosecutor put it: “The odds seem to be stacked against him at this point.”
+
+The 31-year-old co-founded FTX in 2019; within a few years the once third-largest crypto exchange’s valuation hit $32 billion at its peak. It’s now trying to claw back any funds to distribute to creditors.
+
+But how did the once third-largest crypto exchange get here?
+
+Before FTX, Bankman-Fried co-founded crypto-trading firm Alameda Research in 2017. He co-founded FTX in 2019 as a complement to Alameda, to help bring in revenue and liquidity for the trading arm.
+-----
+Finished Loading...
+Generating embeddings:   0%|          | 0/2048 [00:00<?, ?it/s]Generating embeddings:   0%|          | 10/2048 [00:00<00:57, 35.48it/s]Generating embeddings:   4%|▍         | 80/2048 [00:00<00:07, 258.39it/s]Generating embeddings:   7%|▋         | 150/2048 [00:00<00:04, 401.43it/s]Generating embeddings:  11%|█         | 230/2048 [00:00<00:03, 514.70it/s]Generating embeddings:  15%|█▍        | 300/2048 [00:00<00:03, 568.74it/s]Generating embeddings:  19%|█▊        | 380/2048 [00:00<00:02, 621.76it/s]Generating embeddings:  22%|██▏       | 450/2048 [00:00<00:02, 643.74it/s]Generating embeddings:  25%|██▌       | 520/2048 [00:01<00:02, 659.97it/s]Generating embeddings:  29%|██▉       | 600/2048 [00:01<00:02, 669.08it/s]Generating embeddings:  33%|███▎      | 680/2048 [00:01<00:02, 682.69it/s]Generating embeddings:  37%|███▋      | 750/2048 [00:01<00:01, 677.27it/s]Generating embeddings:  41%|████      | 830/2048 [00:01<00:01, 685.20it/s]Generating embeddings:  44%|████▍     | 910/2048 [00:01<00:01, 693.72it/s]Generating embeddings:  48%|████▊     | 980/2048 [00:01<00:01, 695.18it/s]Generating embeddings:  52%|█████▏    | 1060/2048 [00:01<00:01, 699.38it/s]Generating embeddings:  56%|█████▌    | 1140/2048 [00:01<00:01, 704.41it/s]Generating embeddings:  59%|█████▉    | 1211/2048 [00:01<00:01, 689.73it/s]Generating embeddings:  63%|██████▎   | 1281/2048 [00:02<00:01, 689.60it/s]Generating embeddings:  66%|██████▋   | 1360/2048 [00:02<00:00, 694.00it/s]Generating embeddings:  70%|███████   | 1440/2048 [00:02<00:00, 695.31it/s]Generating embeddings:  74%|███████▍  | 1520/2048 [00:02<00:00, 703.79it/s]Generating embeddings:  78%|███████▊  | 1600/2048 [00:02<00:00, 710.66it/s]Generating embeddings:  82%|████████▏ | 1680/2048 [00:02<00:00, 714.95it/s]Generating embeddings:  86%|████████▌ | 1760/2048 [00:02<00:00, 714.15it/s]Generating embeddings:  90%|████████▉ | 1840/2048 [00:02<00:00, 728.21it/s]Generating embeddings:  94%|█████████▍| 1920/2048 [00:02<00:00, 726.09it/s]Generating embeddings:  98%|█████████▊| 2000/2048 [00:03<00:00, 726.23it/s]Generating embeddings: 100%|██████████| 2048/2048 [00:03<00:00, 648.25it/s]
+Generating embeddings:   0%|          | 0/226 [00:00<?, ?it/s]Generating embeddings:  35%|███▌      | 80/226 [00:00<00:00, 717.49it/s]Generating embeddings:  71%|███████   | 160/226 [00:00<00:00, 718.12it/s]Generating embeddings: 100%|██████████| 226/226 [00:00<00:00, 722.16it/s]
+Vector Store Created ...
+Query Data
+--------------------------
+{'query': 'Who is the individual associated with the cryptocurrency industry facing a criminal trial on fraud and conspiracy charges, as reported by both The Verge and TechCrunch, and is accused by prosecutors of committing fraud for personal gain?', 'answer': 'Sam Bankman-Fried', 'question_type': 'inference_query', 'evidence_list': [{'title': 'The FTX trial is bigger than Sam Bankman-Fried', 'author': 'Elizabeth Lopatto', 'url': 'https://www.theverge.com/2023/9/28/23893269/ftx-sam-bankman-fried-trial-evidence-crypto', 'source': 'The Verge', 'category': 'technology', 'published_at': '2023-09-28T12:00:00+00:00', 'fact': 'Before his fall, Bankman-Fried made himself out to be the Good Boy of crypto — the trustworthy face of a sometimes-shady industry.'}, {'title': 'SBF’s trial starts soon, but how did he — and FTX — get here?', 'author': 'Jacquelyn Melinek', 'url': 'https://techcrunch.com/2023/10/01/ftx-lawsuit-timeline/', 'source': 'TechCrunch', 'category': 'technology', 'published_at': '2023-10-01T14:00:29+00:00', 'fact': 'The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy.'}, {'title': 'Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier', 'author': 'Kyle Wiggers', 'url': 'https://techcrunch.com/2023/10/07/sam-altman-backs-a-teens-startup-google-unveils-the-pixel-8-and-tiktok-tests-an-ad-free-tier/', 'source': 'TechCrunch', 'category': 'technology', 'published_at': '2023-10-07T20:15:26+00:00', 'fact': 'The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head.'}]}
+--------------------------
+Running Retrieval ...
+  0%|          | 0/5 [00:00<?, ?it/s] 40%|████      | 2/5 [00:00<00:00, 14.21it/s] 80%|████████  | 4/5 [00:00<00:00, 15.21it/s]100%|██████████| 5/5 [00:00<00:00, 15.22it/s]
+Retieval complete. Saving Results
+Peak working set size: 1.43 GB

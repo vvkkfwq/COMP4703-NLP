@@ -1,0 +1,44 @@
+Remove save file if exists.
+LLM is explicitly disabled. Using MockLLM.
+Corpus Data
+--------------------------
+Doc ID: c86f5772-4de3-4bb4-8781-d5bc5faac869
+Text: SBF’s trial has started, this is how he and FTX got here  The
+highly anticipated criminal trial for Sam Bankman-Fried, former CEO of
+bankrupt crypto exchange FTX, started Tuesday to determine whether
+he’s guilty of seven counts of fraud and conspiracy. And as one former
+federal prosecutor put it: “The odds seem to be stacked against him at
+this ...
+--------------------------
+Initialising pipeline
+LLM sees:
+ [Excerpt from document]
+title: SBF’s trial starts soon, but how did he — and FTX — get here?
+published_at: 2023-10-01T14:00:29+00:00
+source: TechCrunch
+Excerpt:
+-----
+SBF’s trial has started, this is how he and FTX got here
+
+The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy. And as one former federal prosecutor put it: “The odds seem to be stacked against him at this point.”
+
+The 31-year-old co-founded FTX in 2019; within a few years the once third-largest crypto exchange’s valuation hit $32 billion at its peak. It’s now trying to claw back any funds to distribute to creditors.
+
+But how did the once third-largest crypto exchange get here?
+
+Before FTX, Bankman-Fried co-founded crypto-trading firm Alameda Research in 2017. He co-founded FTX in 2019 as a complement to Alameda, to help bring in revenue and liquidity for the trading arm.
+-----
+Finished Loading...
+Generating embeddings:   0%|          | 0/2048 [00:00<?, ?it/s]Generating embeddings:   0%|          | 10/2048 [00:00<00:53, 37.88it/s]Generating embeddings:   4%|▍         | 80/2048 [00:00<00:07, 269.30it/s]Generating embeddings:   7%|▋         | 150/2048 [00:00<00:04, 411.94it/s]Generating embeddings:  11%|█         | 230/2048 [00:00<00:03, 522.01it/s]Generating embeddings:  15%|█▍        | 300/2048 [00:00<00:03, 572.42it/s]Generating embeddings:  19%|█▊        | 380/2048 [00:00<00:02, 624.29it/s]Generating embeddings:  22%|██▏       | 450/2048 [00:00<00:02, 642.83it/s]Generating embeddings:  25%|██▌       | 520/2048 [00:00<00:02, 657.88it/s]Generating embeddings:  29%|██▉       | 590/2048 [00:01<00:02, 670.00it/s]Generating embeddings:  32%|███▏      | 660/2048 [00:01<00:02, 674.87it/s]Generating embeddings:  36%|███▌      | 730/2048 [00:01<00:01, 672.36it/s]Generating embeddings:  40%|███▉      | 810/2048 [00:01<00:01, 680.00it/s]Generating embeddings:  43%|████▎     | 890/2048 [00:01<00:01, 689.12it/s]Generating embeddings:  47%|████▋     | 960/2048 [00:01<00:01, 690.24it/s]Generating embeddings:  51%|█████     | 1040/2048 [00:01<00:01, 699.69it/s]Generating embeddings:  55%|█████▍    | 1120/2048 [00:01<00:01, 711.03it/s]Generating embeddings:  58%|█████▊    | 1192/2048 [00:01<00:01, 705.27it/s]Generating embeddings:  62%|██████▏   | 1263/2048 [00:02<00:01, 688.82it/s]Generating embeddings:  65%|██████▌   | 1340/2048 [00:02<00:01, 690.03it/s]Generating embeddings:  69%|██████▉   | 1420/2048 [00:02<00:00, 697.20it/s]Generating embeddings:  73%|███████▎  | 1490/2048 [00:02<00:00, 696.58it/s]Generating embeddings:  77%|███████▋  | 1570/2048 [00:02<00:00, 706.94it/s]Generating embeddings:  81%|████████  | 1650/2048 [00:02<00:00, 715.03it/s]Generating embeddings:  84%|████████▍ | 1722/2048 [00:02<00:00, 714.13it/s]Generating embeddings:  88%|████████▊ | 1800/2048 [00:02<00:00, 720.05it/s]Generating embeddings:  92%|█████████▏| 1880/2048 [00:02<00:00, 726.18it/s]Generating embeddings:  96%|█████████▌| 1960/2048 [00:03<00:00, 724.09it/s]Generating embeddings: 100%|█████████▉| 2040/2048 [00:03<00:00, 726.69it/s]Generating embeddings: 100%|██████████| 2048/2048 [00:03<00:00, 650.54it/s]
+Generating embeddings:   0%|          | 0/226 [00:00<?, ?it/s]Generating embeddings:  35%|███▌      | 80/226 [00:00<00:00, 709.42it/s]Generating embeddings:  71%|███████   | 160/226 [00:00<00:00, 709.63it/s]Generating embeddings: 100%|██████████| 226/226 [00:00<00:00, 714.35it/s]
+Vector Store Created ...
+Query Data
+--------------------------
+{'query': 'Who is the individual associated with the cryptocurrency industry facing a criminal trial on fraud and conspiracy charges, as reported by both The Verge and TechCrunch, and is accused by prosecutors of committing fraud for personal gain?', 'answer': 'Sam Bankman-Fried', 'question_type': 'inference_query', 'evidence_list': [{'title': 'The FTX trial is bigger than Sam Bankman-Fried', 'author': 'Elizabeth Lopatto', 'url': 'https://www.theverge.com/2023/9/28/23893269/ftx-sam-bankman-fried-trial-evidence-crypto', 'source': 'The Verge', 'category': 'technology', 'published_at': '2023-09-28T12:00:00+00:00', 'fact': 'Before his fall, Bankman-Fried made himself out to be the Good Boy of crypto — the trustworthy face of a sometimes-shady industry.'}, {'title': 'SBF’s trial starts soon, but how did he — and FTX — get here?', 'author': 'Jacquelyn Melinek', 'url': 'https://techcrunch.com/2023/10/01/ftx-lawsuit-timeline/', 'source': 'TechCrunch', 'category': 'technology', 'published_at': '2023-10-01T14:00:29+00:00', 'fact': 'The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy.'}, {'title': 'Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier', 'author': 'Kyle Wiggers', 'url': 'https://techcrunch.com/2023/10/07/sam-altman-backs-a-teens-startup-google-unveils-the-pixel-8-and-tiktok-tests-an-ad-free-tier/', 'source': 'TechCrunch', 'category': 'technology', 'published_at': '2023-10-07T20:15:26+00:00', 'fact': 'The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head.'}]}
+--------------------------
+Reranker enabled
+Running Retrieval ...
+  0%|          | 0/5 [00:00<?, ?it/s]You're using a XLMRobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+ 20%|██        | 1/5 [00:00<00:02,  1.92it/s] 40%|████      | 2/5 [00:00<00:01,  2.57it/s] 60%|██████    | 3/5 [00:01<00:00,  2.75it/s] 80%|████████  | 4/5 [00:01<00:00,  2.96it/s]100%|██████████| 5/5 [00:01<00:00,  3.18it/s]100%|██████████| 5/5 [00:01<00:00,  2.90it/s]
+Retieval complete. Saving Results
+Peak working set size: 1.93 GB
