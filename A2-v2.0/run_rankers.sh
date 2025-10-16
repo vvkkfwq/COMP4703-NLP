@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 # Activate conda environment
-source /opt/miniconda3/etc/profile.d/conda.sh
-conda activate COMP4703A2
+source /conda/etc/profile.d/conda.sh
+conda activate NLPA2
+export PATH=/conda/envs/NLPA2/bin:$PATH
 
-PYTHON="/opt/miniconda3/envs/COMP4703A2/bin/python -u"
-WORKING_DIR="/Users/vickeyfeng/Code/COMP4703-NLP/Assignment2"
+PYTHON="/conda/envs/NLPA2/bin/python"
+WORKING_DIR="$HOME/A2-v2.0"
 
 # Read STAGING status from config.py
 IS_STAGING=$(grep "is_STAGING" config.py | grep -o "True\|False")
