@@ -196,7 +196,11 @@ if __name__ == "__main__":
         queries = "data/rag.json"
 
     rank_model_name = "sentence-transformers/all-MiniLM-L6-v2"
-    output_name = "output/all-MiniLM-L6-v2-ranker.json"
+
+    if STAGING:
+        output_name = "output/staging/all-MiniLM-L6-v2-ranker.json"
+    else:
+        output_name = "output/product/all-MiniLM-L6-v2-ranker.json"
 
     start_retrival(corpus, queries, rank_model_name, output_name)
 

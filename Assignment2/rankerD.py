@@ -196,7 +196,11 @@ if __name__ == "__main__":
         queries = "data/rag.json"
 
     rank_model_name = "intfloat/multilingual-e5-large"
-    output_name = "output/multilingual-e5-large-ranker.json"
+
+    if STAGING:
+        output_name = "output/staging/multilingual-e5-large-ranker.json"
+    else:
+        output_name = "output/product/multilingual-e5-large-ranker.json"
 
     start_retrival(corpus, queries, rank_model_name, output_name)
 

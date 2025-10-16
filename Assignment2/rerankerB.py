@@ -206,7 +206,11 @@ if __name__ == "__main__":
 
     rank_model_name = "sentence-transformers/all-MiniLM-L6-v2"
     rerank_model_name = "BAAI/bge-reranker-base"
-    output_name = "output/all-MiniLM-L6-reranker.json"
+
+    if STAGING:
+        output_name = "output/staging/all-MiniLM-L6-reranker.json"
+    else:
+        output_name = "output/product/all-MiniLM-L6-reranker.json"
 
     start_retrival(corpus, queries, rank_model_name, rerank_model_name, output_name)
 

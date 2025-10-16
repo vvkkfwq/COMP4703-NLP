@@ -206,7 +206,11 @@ if __name__ == "__main__":
 
     rank_model_name = "BAAI/llm-embedder"
     rerank_model_name = "BAAI/bge-reranker-base"
-    output_name = "output/llm-embedder-reranker.json"
+
+    if STAGING:
+        output_name = "output/staging/llm-embedder-reranker.json"
+    else:
+        output_name = "output/product/llm-embedder-reranker.json"
 
     start_retrival(corpus, queries, rank_model_name, rerank_model_name, output_name)
 
