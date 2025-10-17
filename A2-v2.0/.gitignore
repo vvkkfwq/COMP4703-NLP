@@ -68,4 +68,4 @@ huggingface/
 .env.local
 
 # Output
-output/
+output/production/*.json

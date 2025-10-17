@@ -5,7 +5,7 @@ PROJECT_ROOT = Path(__file__).parent.resolve()
 print(f"from config.py: project_root: {PROJECT_ROOT}")
 
 use_GPU = True
-is_STAGING = True
+is_STAGING = False
 
 # Define data directories
 DATA_DIR = PROJECT_ROOT / "data"
