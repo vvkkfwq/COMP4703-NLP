@@ -77,14 +77,14 @@
 
 **预计时间**: 6-8 小时**GPU 时间**: 2 小时
 
-- [ ] **Task 2.1**: 深入理解示例代码
+- [x] **Task 2.1**: 深入理解示例代码
 
   - 阅读 `example_retrieval.py`
   - 阅读 `example_reranker.py`
   - 阅读 `example_rag.py`
   - 理解 Llama Index API 调用方式
 
-- [ ] **Task 2.2**: 研究可用模型
+- [x] **Task 2.2**: 研究可用模型
 
   - 检索模型选择 (4 个)
     - 查看已下载的 embedding 模型
@@ -93,13 +93,13 @@
     - 查看可用的 7B-13B 参数模型
     - 确认模型在 24GB GPU 内存限制下可运行
 
-- [ ] **Task 2.3**: 阅读 Llama Index 文档
+- [x] **Task 2.3**: 阅读 Llama Index 文档
 
   - 阅读 `llamaindex-tutorial.md`
   - 理解如何切换不同的 retrieval 算法
   - 理解如何切换不同的 LLM 模型
 
-- [ ] **Task 2.4**: 完整测试流程
+- [x] **Task 2.4**: 完整测试流程
 
   ```bash
   # 测试完整RAG流程
@@ -134,7 +134,7 @@
   python rankerD.py
   ```
 
-- [ ] **Task 3.3**: 评估检索结果
+- [x] **Task 3.3**: 评估检索结果
 
   ```bash
   python evaluate_stage_1.py --input output/rankerA.json
@@ -143,7 +143,7 @@
   python evaluate_stage_1.py --input output/rankerD.json
   ```
 
-- [ ] **Task 3.4**: 选择最优的 2 个 ranker
+- [x] **Task 3.4**: 选择最优的 2 个 ranker
 
   - 基于 Recall@k, Precision, MRR 等指标
   - 记录选择理由(用于报告的 Methodology 部分)
@@ -161,7 +161,7 @@
 
 **预计时间**: 每天 4 小时**GPU 时间**: 8 小时 (4 个模型 × 2 小时)
 
-- [ ] **Task 4.1**: 在完整数据集上运行 4 个 ranker
+- [x] **Task 4.1**: 在完整数据集上运行 4 个 ranker
 
   - 修改所有 ranker 使用 `data/rag.json`
   - 编写批处理脚本运行所有实验
@@ -174,7 +174,7 @@
   python rankerD.py > logs/rankerD.log 2>&1
   ```
 
-- [ ] **Task 4.2**: 使用 tmux 运行长时间任务
+- [x] **Task 4.2**: 使用 tmux 运行长时间任务
 
   ```bash
   tmux new -s experiments
@@ -182,13 +182,13 @@
   # Ctrl+B, D 分离会话
   ```
 
-- [ ] **Task 4.3**: 定期检查进度
+- [x] **Task 4.3**: 定期检查进度
 
   - 每 4 小时检查一次日志
   - 确认没有错误
   - 监控 GPU 使用: `nvidia-smi`
 
-- [ ] **Task 4.4**: 评估所有检索结果
+- [x] **Task 4.4**: 评估所有检索结果
 
   - 运行评估脚本
   - 生成对比表格
@@ -211,9 +211,9 @@
 - [ ] **Task 5.1**: 创建 4 个 LLM 变体
 
   - [ ] `ragA.py` - Llama 2 7B (baseline)
-  - [ ] `ragB.py` - Llama 3.1 8B
-  - [ ] `ragC.py` - Mistral 7B v0.1
-  - [ ] `ragD.py` - Phi-3 Mini 4K
+  - [ ] `ragB.py` - Meta-Llama-3-8B-Instruct
+  - [ ] `ragC.py` - Mistral-7B-Instruct-v0.3
+  - [ ] `ragD.py` - Qwen3-8B
 
 - [ ] **Task 5.2**: 配置 prompt template
 

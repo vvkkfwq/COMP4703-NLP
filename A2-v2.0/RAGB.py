@@ -208,10 +208,10 @@ def initialise_and_run_model(save_name, input_stage_1, model_name):
 
 
 if __name__ == "__main__":
-    model_name = "meta-llama/Llama-2-7b-chat-hf"
+    model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
     for ranker in RANKERS:
 
-        output_file = OUTPUT_PATH / f"{ranker}_llama2.json"
+        output_file = OUTPUT_PATH / f"{ranker}_llama3.json"
         input_stage_1 = RANKERS[ranker]
         initialise_and_run_model(output_file, input_stage_1, model_name)
 
