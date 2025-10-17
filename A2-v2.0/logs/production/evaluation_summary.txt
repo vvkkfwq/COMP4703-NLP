@@ -1,0 +1,41 @@
+====================================== 
+Ranker Evaluation Summary
+Date: Fri Oct 17 10:58:50 AEST 2025
+====================================== 
+
+=== llm-embedder-ranker ===
+Hits@10: 0.5348
+Hits@4: 0.4018
+MAP@10: 0.1408
+MRR@10: 0.3299
+
+=== all-MiniLM-L6-v2-ranker ===
+Hits@10: 0.5100
+Hits@4: 0.3636
+MAP@10: 0.1337
+MRR@10: 0.2955
+
+=== bge-large-en-v1.5-ranker ===
+Hits@10: 0.6896
+Hits@4: 0.5463
+MAP@10: 0.1997
+MRR@10: 0.4520
+
+=== multilingual-e5-large-ranker ===
+Hits@10: 0.6213
+Hits@4: 0.4670
+MAP@10: 0.1580
+MRR@10: 0.3752
+
+=== llm-embedder-reranker ===
+Hits@10: 0.6204
+Hits@4: 0.5410
+MAP@10: 0.2149
+MRR@10: 0.4936
+
+=== all-MiniLM-L6-reranker ===
+Hits@10: 0.5965
+Hits@4: 0.5228
+MAP@10: 0.2119
+MRR@10: 0.4702
+
