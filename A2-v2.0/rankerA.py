@@ -198,9 +198,9 @@ if __name__ == "__main__":
     rank_model_name = "BAAI/llm-embedder"
 
     if STAGING:
-        output_name = "output/staging/llm-embedder-ranker.json"
+        output_name = "output/staging/rankerA.json"
     else:
-        output_name = "output/production/llm-embedder-ranker.json"
+        output_name = "output/production/rankerA.json"
 
     start_retrival(corpus, queries, rank_model_name, output_name)
 

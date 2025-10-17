@@ -208,9 +208,9 @@ if __name__ == "__main__":
     rerank_model_name = "BAAI/bge-reranker-base"
 
     if STAGING:
-        output_name = "output/staging/all-MiniLM-L6-reranker.json"
+        output_name = "output/staging/rerankerB.json"
     else:
-        output_name = "output/production/all-MiniLM-L6-reranker.json"
+        output_name = "output/production/rerankerB.json"
 
     start_retrival(corpus, queries, rank_model_name, rerank_model_name, output_name)
 

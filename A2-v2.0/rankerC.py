@@ -198,9 +198,9 @@ if __name__ == "__main__":
     rank_model_name = "BAAI/bge-large-en-v1.5"
 
     if STAGING:
-        output_name = "output/staging/bge-large-en-v1.5-ranker.json"
+        output_name = "output/staging/rankerC.json"
     else:
-        output_name = "output/production/bge-large-en-v1.5-ranker.json"
+        output_name = "output/production/rankerC.json"
 
     start_retrival(corpus, queries, rank_model_name, output_name)
 
