@@ -8,11 +8,14 @@ from copy import deepcopy
 from typing import List, Dict, Optional
 import psutil
 
+import openai
+
 # llmaindex
 from llama_index.extractors import BaseExtractor
 from llama_index.ingestion import IngestionPipeline
 from llama_index.schema import Document, MetadataMode
 from llama_index.embeddings import HuggingFaceEmbedding
+from llama_index.llms import OpenAI
 from llama_index import (
     ServiceContext,
     PromptHelper,
@@ -105,6 +108,10 @@ def start_retrival(corpus, queries, rank_model_name, output_name):
     context_window = 2048
     num_output = 256
     save_file = output_name
+    def_llm = "gpt-3.5-turbo-1106"
+    openai.api_key = os.environ.get("OPENAI_API_KEY", "your_openai_api_key")
+    openai.base_url = "your_api_base"
+    llm = OpenAI(model=def_llm, temperature=0, max_tokens=context_window)
 
     print("Remove save file if exists.")
     rm_file(save_file)
@@ -122,7 +129,7 @@ def start_retrival(corpus, queries, rank_model_name, output_name):
     )
 
     service_context = ServiceContext.from_defaults(
-        llm=None,
+        llm=llm,
         embed_model=embed_model,
         text_splitter=text_splitter,
         prompt_helper=prompt_helper,
@@ -174,13 +181,13 @@ def start_retrival(corpus, queries, rank_model_name, output_name):
             dic["score"] = ns.get_score()
             retrieval_list.append(dic)
 
-            save = {}
-            save["query"] = data["query"]
-            save["answer"] = data["answer"]
-            save["question_type"] = data["question_type"]
-            save["retrieval_list"] = retrieval_list
-            save["gold_list"] = data["evidence_list"]
-            retrieval_save_list.append(save)
+        save = {}
+        save["query"] = data["query"]
+        save["answer"] = data["answer"]
+        save["question_type"] = data["question_type"]
+        save["retrieval_list"] = retrieval_list
+        save["gold_list"] = data["evidence_list"]
+        retrieval_save_list.append(save)
 
     print("Retieval complete. Saving Results")
     with open(save_file, "w") as json_file:

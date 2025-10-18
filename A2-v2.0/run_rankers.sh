@@ -28,23 +28,23 @@ echo "======================================"
 
 # Run rankers
 echo "[1/6] Running rankerA..."
-${PYTHON} rankerA.py 2>&1 | tee ${LOG_DIR}/rankerA.log
+${PYTHON} rankerA.py > ${LOG_DIR}/rankerA.log 2>&1
 
 echo "[2/6] Running rankerB..."
-${PYTHON} rankerB.py 2>&1 | tee ${LOG_DIR}/rankerB.log
+${PYTHON} rankerB.py > ${LOG_DIR}/rankerB.log 2>&1
 
 echo "[3/6] Running rankerC..."
-${PYTHON} rankerC.py 2>&1 | tee ${LOG_DIR}/rankerC.log
+${PYTHON} rankerC.py > ${LOG_DIR}/rankerC.log 2>&1
 
 echo "[4/6] Running rankerD..."
-${PYTHON} rankerD.py 2>&1 | tee ${LOG_DIR}/rankerD.log
+${PYTHON} rankerD.py > ${LOG_DIR}/rankerD.log 2>&1
 
 # Run rerankers
 echo "[5/6] Running rerankerA..."
-${PYTHON} rerankerA.py 2>&1 | tee ${LOG_DIR}/rerankerA.log
+${PYTHON} rerankerA.py > ${LOG_DIR}/rerankerA.log 2>&1
 
 echo "[6/6] Running rerankerB..."
-${PYTHON} rerankerB.py 2>&1 | tee ${LOG_DIR}/rerankerB.log
+${PYTHON} rerankerB.py > ${LOG_DIR}/rerankerB.log 2>&1
 
 echo "======================================"
 echo "All tasks completed!"
