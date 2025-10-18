@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 
 # Activate conda environment
-source /conda/etc/profile.d/conda.sh
+source /root/miniconda3/etc/profile.d/conda.sh
 conda activate COMP4703A2
-export PATH=/conda/envs/COMP4703A2/bin:$PATH
+export PATH=/root/miniconda3/envs/COMP4704A2/bin:$PATH
+PYTHON="/root/miniconda3/envs/COMP4703A2/bin/python"
+WORKING_DIR="/workspace/COMP4703-NLP/A2-v2.0"
 
 # Use which to find python from activated environment
-PYTHON=$(which python)
-WORKING_DIR="$HOME/code/COMP4703-NLP/A2-v2.0"
+# PYTHON=$(which python)
+# WORKING_DIR="$HOME/code/COMP4703-NLP/A2-v2.0"
 
 # Read STAGING status from config.py
 IS_STAGING=$(grep "is_STAGING" config.py | grep -o "True\|False")
@@ -26,13 +28,13 @@ else
     echo "Evaluating in PRODUCTION mode"
 fi
 
-mkdir -p ${LOG_DIR}
+# mkdir -p ${LOG_DIR}
 
 echo "Evaluating All Rankers and Rerankers"
 echo "======================================"
 
 # Define ranker list
-RANKERS=("llm-embedder-ranker" "all-MiniLM-L6-v2-ranker" "bge-large-en-v1.5-ranker" "multilingual-e5-large-ranker" "llm-embedder-reranker" "all-MiniLM-L6-reranker")
+RANKERS=("rankerA" "rankerB" "rankerC" "rankerD" "rerankerA" "rerankerB")
 
 # Initialize summary file
 echo "====================================== " > ${SUMMARY_FILE}
