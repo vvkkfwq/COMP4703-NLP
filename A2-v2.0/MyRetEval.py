@@ -1,5 +1,6 @@
 import os, json
 import argparse
+import math
 
 
 def calculate_metrics(retrieved_lists, gold_lists):
@@ -7,6 +8,7 @@ def calculate_metrics(retrieved_lists, gold_lists):
     hits_at_4_count = 0
     map_at_10_list = []
     mrr_list = []
+    ndcg_at_10_list = []
 
     for retrieved, gold in zip(retrieved_lists, gold_lists):
         hits_at_10_flag = False
@@ -18,6 +20,7 @@ def calculate_metrics(retrieved_lists, gold_lists):
         gold = [item.replace(" ", "").replace("\n", "") for item in gold]
         retrieved = [item.replace(" ", "").replace("\n", "") for item in retrieved]
 
+        dcg = 0
         for rank, retrieved_item in enumerate(retrieved[:11], start=1):
             if any(gold_item in retrieved_item for gold_item in gold):
                 if rank <= 10:
@@ -35,6 +38,18 @@ def calculate_metrics(retrieved_lists, gold_lists):
                     precision_at_rank = count / rank
                     average_precision_sum += precision_at_rank
 
+                    # DCG formula: rel_i / log2(i + 1)
+                    dcg += 1.0 / math.log2(rank + 1)
+
+        # Calculate IDCG@10 (Ideal DCG)
+        idcg = 0
+        for rank in range(1, min(len(gold), 10) + 1):
+            idcg += 1 / math.log2(rank + 1)
+
+        # Calculate NDCG@10
+        ndcg = dcg / idcg if idcg > 0 else 0
+        ndcg_at_10_list.append(ndcg)
+
         # Calculate metrics for this query
         hits_at_10_count += int(hits_at_10_flag)
         hits_at_4_count += int(hits_at_4_flag)
@@ -46,12 +61,14 @@ def calculate_metrics(retrieved_lists, gold_lists):
     hits_at_4 = hits_at_4_count / len(gold_lists)
     map_at_10 = sum(map_at_10_list) / len(gold_lists)
     mrr_at_10 = sum(mrr_list) / len(gold_lists)
+    ndcg_at_10 = sum(ndcg_at_10_list) / len(gold_lists)
 
     return {
         "Hits@10": hits_at_10,
         "Hits@4": hits_at_4,
         "MAP@10": map_at_10,
         "MRR@10": mrr_at_10,
+        "NDCG@10": ndcg_at_10,
     }
 
 
