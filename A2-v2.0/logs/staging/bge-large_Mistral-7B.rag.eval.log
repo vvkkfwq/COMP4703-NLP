@@ -1,15 +1,22 @@
-  0%|          | 0/5 [00:00<?, ?it/s]100%|██████████| 5/5 [00:00<00:00, 67432.54it/s]
+
+  0%|          | 0/5 [00:00<?, ?it/s]
+100%|██████████| 5/5 [00:00<00:00, 76818.75it/s]
+
 Question Type: inference_query
  Precision: 0.75
  Recall: 0.75
  F1 Score: 0.75
+ Exact Match: 0.75
 
 Question Type: comparison_query
  Precision: 0.00
  Recall: 0.00
  F1 Score: 0.00
+ Exact Match: 0.00
 
 Overall Metrics:
  Precision: 0.60
  Recall: 0.60
  F1 Score: 0.60
+ Exact Match: 0.60
+

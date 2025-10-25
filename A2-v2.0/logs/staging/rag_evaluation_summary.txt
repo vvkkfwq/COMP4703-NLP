@@ -1,6 +1,6 @@
 ====================================== 
 RAG Evaluation Summary
-Date: Mon Oct 20 17:05:42 AEST 2025
+Date: Sat Oct 25 15:27:22 AEST 2025
 ====================================== 
 
 === LLM Embedder Reranker + Llama-2 ===
@@ -8,46 +8,54 @@ Overall Metrics:
  Precision: 0.60
  Recall: 0.41
  F1 Score: 0.43
+ Exact Match: 0.40
 
 === LLM Embedder Reranker + Llama-3 ===
 Overall Metrics:
- Precision: 0.80
- Recall: 0.00
- F1 Score: 0.00
+ Precision: 0.70
+ Recall: 0.80
+ F1 Score: 0.73
+ Exact Match: 0.60
 
 === LLM Embedder Reranker + Mistral-7B ===
 Overall Metrics:
  Precision: 0.80
  Recall: 0.80
  F1 Score: 0.80
+ Exact Match: 0.80
 
 === LLM Embedder Reranker + Qwen3-8B ===
 Overall Metrics:
  Precision: 0.80
- Recall: 0.00
- F1 Score: 0.00
+ Recall: 0.80
+ F1 Score: 0.80
+ Exact Match: 0.80
 
 === BGE Large + Llama-2 ===
 Overall Metrics:
  Precision: 0.80
  Recall: 0.43
  F1 Score: 0.46
+ Exact Match: 0.40
 
 === BGE Large + Llama-3 ===
 Overall Metrics:
- Precision: 0.80
- Recall: 0.00
- F1 Score: 0.00
+ Precision: 0.60
+ Recall: 0.60
+ F1 Score: 0.60
+ Exact Match: 0.60
 
 === BGE Large + Mistral-7B ===
 Overall Metrics:
  Precision: 0.60
  Recall: 0.60
  F1 Score: 0.60
+ Exact Match: 0.60
 
 === BGE Large + Qwen3-8B ===
 Overall Metrics:
  Precision: 0.80
- Recall: 0.00
- F1 Score: 0.00
+ Recall: 0.80
+ F1 Score: 0.80
+ Exact Match: 0.80
 

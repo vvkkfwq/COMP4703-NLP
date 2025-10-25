@@ -4,189 +4,383 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a COMP4703 (Natural Language Processing) Assignment 2 project focused on implementing and evaluating Retrieval Augmented Generation (RAG) systems for multi-hop question answering. The project involves comparing different retrieval algorithms and Large Language Models (LLMs) to determine optimal configurations for answering factual questions that require information synthesis from multiple documents.
+This is a COMP4703 (Natural Language Processing) Assignment 2 project focused on implementing and evaluating Retrieval Augmented Generation (RAG) systems for multi-hop question answering. The project compares different retrieval algorithms and Large Language Models (LLMs) to determine optimal configurations.
+
+## Centralized Configuration System
+
+**CRITICAL:** All runtime settings are managed through [config.py](config.py). Never hardcode these values in individual scripts.
+
+```python
+# config.py controls:
+use_GPU = True              # Toggle GPU/CPU execution
+is_STAGING = False          # True: sample data, False: full dataset
+RANKERS = {...}             # Maps ranker names to output paths
+OUTPUT_PATH                 # Auto-switches: output/staging/ or output/production/
+```
+
+**Before running experiments, always verify config.py settings:**
+
+- Set `is_STAGING = True` for local testing with sample data
+- Set `is_STAGING = False` only for final production runs on full dataset
+- Set `use_GPU = True` on GPU server, `False` for local CPU development
 
 ## Key Commands
 
-### Running Experiments
+### Production Workflow Scripts
 
-**Stage 1: Retrieval**
-
-```bash
-python example_retrieval.py        # Run dense retrieval with embedding models
-python evaluate_stage_1.py         # Evaluate retrieval performance (Hits@k, MAP, MRR)
-```
-
-**Stage 2: Reranking (Optional)**
+The project uses automated shell scripts for running complete experimental pipelines:
 
 ```bash
-python example_reranker.py         # Apply reranking to improve retrieval results
+# Run all 4 rankers + 2 rerankers (Stage 1)
+bash run_rankers.sh
+
+# Evaluate all retrieval outputs
+bash evaluate_rankers.sh
+
+# Run all 8 RAG configurations (2 rankers × 4 LLMs)
+bash run_rag.sh
+
+# Evaluate all RAG outputs
+bash evaluate_rags.sh
 ```
 
-**Stage 3: RAG with LLM**
+**Script Features:**
+
+- Automatically detects STAGING mode from config.py
+- Saves logs to `logs/staging/` or `logs/production/`
+- Generates summary files with aggregated metrics
+- Uses conda environment activation (update paths for your setup)
+
+### Individual Component Execution
 
 ```bash
-python example_rag.py              # Run full RAG pipeline with LLM generation
-python evaluate_rag.py <output>    # Evaluate RAG results (Precision, Recall, F1)
+# Stage 1: Retrieval variants
+python rankerA.py          # BAAI/llm-embedder
+python rankerB.py          # sentence-transformers/all-MiniLM-L6-v2
+python rankerC.py          # BAAI/bge-large-en-v1.5
+python rankerD.py          # intfloat/multilingual-e5-large
+
+# Stage 2: Reranking variants
+python rerankerA.py        # llm-embedder + bge-reranker-base
+python rerankerB.py        # sentence-transformers/all-MiniLM-L6-v2 + bge-reranker-base
+
+# Stage 3: RAG variants (uses retrieval outputs from config.RANKERS)
+python RAGA.py             # meta-llama/Llama-2-7b-chat-hf
+python RAGB.py             # meta-llama/Meta-Llama-3-8B-Instruct
+python RAGC.py             # mistralai/Mistral-7B-Instruct-v0.3
+python RAGD.py             # Qwen/Qwen3-8B
+
+# Evaluation
+python MyRetEval.py --input <ranker_output.json>
+python MyRagEval.py <rag_output.json>
 ```
 
-**Test Runner Script**
+### Baseline Reference Scripts
 
 ```bash
-bash test_runner.sh                # Run all three example scripts sequentially
+python example_retrieval.py   # Reference retrieval implementation
+python example_reranker.py    # Reference reranker implementation
+python example_rag.py         # Reference RAG implementation
+python evaluate_stage_1.py    # Original retrieval evaluator
+python evaluate_rag.py        # Original RAG evaluator
 ```
-
-### Environment Setup
-
-The project uses a pre-configured conda environment (typically named `NLPA2` on the GPU server):
-
-```bash
-conda activate NLPA2
-```
-
-For local setup, dependencies include:
-
-- PyTorch (GPU or CPU variant)
-- llama-index==0.9.40
-- transformers, sentence-transformers, FlagEmbedding
-- rich, scikit-learn, tqdm, pandas, psutil
 
 ## Code Architecture
 
-### Data Flow
+### File Naming Convention and Workflow
 
-1. **Corpus & Queries** → `data/corpus.json`, `data/rag.json` (full), or `data/sample-*.json` (for testing)
-2. **Stage 1: Retrieval** → Embedding model creates vector index → Retrieves top-k documents
-3. **Stage 2: Reranking** (optional) → Cross-encoder reranks top-k → Improves precision
-4. **Stage 3: Generation** → LLM synthesizes answer from retrieved context → Outputs answer or "Insufficient Information"
+The project follows a systematic naming scheme:
 
-### Core Components
+1. **Retrieval Stage:**
 
-**example_retrieval.py**
+   - `ranker[A-D].py` → produces `rankerA.json` (retrieval results only)
+   - `reranker[A-B].py` → produces `rerankerA.json` (retrieval + reranking)
 
-- Uses `JSONReader` to parse corpus documents with metadata (title, source, published_at)
-- Implements `gen_stage_0()` function that:
-  - Supports multiple embedding models (HuggingFace, OpenAI, Cohere, Voyage, Instructor)
-  - Creates `VectorStoreIndex` with LlamaIndex
-  - Retrieves top-k documents for each query
-  - Optionally applies reranking via `FlagEmbeddingReranker`
-  - Outputs JSON with retrieval_list (text + scores) and gold_list (evidence)
-- Toggle `STAGING=True/False` to switch between sample and full datasets
-- Key parameters: `topk=10`, `chunk_size=256`, embedding `model_name`
+2. **RAG Stage:**
 
-**example_rag.py**
+   - `RAG[A-D].py` → reads from `config.RANKERS` dictionary
+   - Outputs named: `{ranker_name}_{llm_name}.json`
+   - Example: `llm-embedder-reranker_llama2.json`
 
-- Uses HuggingFace transformers to load causal LLMs (e.g., Llama-2-7b-chat-hf)
-- `run_query()` function handles chat template formatting and generation
-- Default instruction prompt defines expected output format (direct answer or "Insufficient Information")
-- Toggle `GPU=True/False` for device placement
-- Reads Stage 1 retrieval results (`input_stage_1`), concatenates retrieved context
-- Outputs JSON with query, prompt, model_answer, gold_answer, question_type
+3. **Evaluation:**
+   - `MyRetEval.py` → evaluates ranker/reranker outputs (Hits@k, MAP, MRR, NDCG)
+   - `MyRagEval.py` → evaluates RAG outputs (Precision, Recall, F1, EM)
 
-**evaluate_stage_1.py**
-
-- Computes retrieval metrics: Hits@10, Hits@4, MAP@10, MRR@10
-- Filters out `null_query` question types
-- Matches retrieved text against gold evidence facts using substring matching
-
-**evaluate_rag.py**
-
-- Computes generation metrics: Precision, Recall, F1 (word-level overlap)
-- Uses `count_overlap()` to tokenize and match predicted vs. gold answers
-- Reports metrics per question_type and overall
-- Handles answer extraction from verbose LLM responses
-
-### Important Implementation Details
-
-**Model Configuration**
-
-- Retrieval models are specified in `rank_model_name` (e.g., "BAAI/llm-embedder")
-- LLM models require HuggingFace model paths (e.g., "meta-llama/Llama-2-7b-chat-hf")
-- Models are auto-downloaded to `~/.cache/huggingface/hub` if not cached
-
-**GPU Considerations**
-
-- Set `GPU=True` in example_rag.py when using GPU
-- Use `torch.set_default_dtype(torch.float16)` for GPU to reduce memory usage
-- Expected memory: ~13GB for Llama-2-7b (24GB GPU required with safety margin)
-- Monitor with `nvidia-smi`
-
-**Output Format Requirements**
-
-- Stage 1 output must include: query, answer, question_type, retrieval_list, gold_list
-- RAG output must include: query, model_answer, gold_answer, question_type
-- Answers must be cleaned (remove "</s>", "[/INST]" tokens) for exact match evaluation
-
-**Prompt Engineering**
-
-- Default prompt in example_rag.py is carefully tested for evaluation compatibility
-- Instructs model to return single word/entity or "Insufficient Information"
-- Modifying prompts may break evaluation scripts if output format changes
-
-**Data Handling**
-
-- `JSONReader` wraps corpus documents as LlamaIndex `Document` objects with metadata
-- `CustomExtractor` ensures metadata (title, source, published_at) is included in LLM context
-- Question types: "inference_query", "comparison_query", "temporal_query", "null_query"
-
-## Assignment Requirements Context
-
-**Experimental Design**
-
-- Must test 4 different retrieval algorithms (dense embedding models)
-- Must test 4 different LLMs (7B-13B parameter range recommended)
-- Typical strategy: Evaluate all 4 retrievers, select best 2, combine with 4 LLMs = 8 RAG configurations
-- Must implement at least 2 additional custom evaluation metrics beyond provided ones
-
-**GPU Budget**
-
-- Total allocation: 40 hours
-- Estimated breakdown: 4h retrieval + 16h RAG generation + margin for debugging
-- Use `tmux` for long-running jobs to prevent session timeout
-
-**Current Project Structure**
+### Data Flow Pipeline
 
 ```
-Assignment2/
-├── data/                         # Dataset files
-│   ├── corpus.json              # Full corpus (~1000 documents)
-│   ├── rag.json                 # Full queries (~200 questions)
-│   ├── sample-corpus.json       # Sample corpus for testing
-│   └── sample-rag.json          # Sample queries for testing
-├── docs/                         # Project documentation
-│   ├── requirement.md           # Assignment requirements
-│   └── roadmap.md               # Implementation roadmap
-├── output/                       # Experiment outputs (gitignored)
-├── example_retrieval.py          # Retrieval baseline implementation
-├── example_reranker.py           # Reranking baseline implementation
-├── example_rag.py                # RAG baseline implementation
-├── evaluate_stage_1.py           # Retrieval evaluation script
-├── evaluate_rag.py               # RAG evaluation script
-├── test_runner.sh                # Quick test script for all stages
-├── README.md                     # Project documentation
-├── CLAUDE.md                     # This file - Claude Code guidance
-├── llamaindex-tutorial.md        # LlamaIndex usage tutorial
-└── A2-v2.0.pdf                   # Assignment specification
+data/corpus.json ──┐
+                   ├──> ranker*.py ──> ranker*.json ──┐
+data/rag.json ─────┘                                   │
+                                                       ├──> RAG*.py ──> {ranker}_{llm}.json ──> MyRagEval.py
+                   ┌──> reranker*.py ──> reranker*.json ┘
+                   │
+        (Stage 1: Retrieval)     (Stage 2: Reranking)        (Stage 3: Generation)      (Evaluation)
 ```
 
-**Final Submission Structure**
+### Core Implementation Patterns
+
+**JSONReader Class** (in ranker\*.py)
+
+- Parses corpus.json into LlamaIndex `Document` objects
+- Preserves metadata: `title`, `source`, `published_at`
+- Used consistently across all retrieval implementations
+
+**Embedding Models** (Stage 1)
+
+```python
+from llama_index.embeddings import HuggingFaceEmbedding
+
+embed_model = HuggingFaceEmbedding(
+    model_name="BAAI/llm-embedder",
+    query_instruction="Represent this query for retrieving relevant documents: "
+)
+```
+
+**Reranking** (Stage 2)
+
+```python
+from llama_index.postprocessor.flag_embedding_reranker import FlagEmbeddingReranker
+
+reranker = FlagEmbeddingReranker(
+    model="BAAI/bge-reranker-base",
+    top_n=10
+)
+```
+
+**LLM Generation** (Stage 3)
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+# RAG*.py files use HuggingFace transformers directly (not LlamaIndex LLM)
+model = AutoModelForCausalLM.from_pretrained(
+    "meta-llama/Llama-2-7b-chat-hf",
+    torch_dtype=torch.float16,
+    device_map="auto"
+)
+```
+
+### Output Format Requirements
+
+**Retrieval Output (ranker/reranker\*.json):**
+
+```json
+{
+  "query": "question text",
+  "answer": "gold answer",
+  "question_type": "inference_query",
+  "retrieval_list": [
+    {"text": "doc1 text with metadata", "score": 0.85},
+    {"text": "doc2 text with metadata", "score": 0.76}
+  ],
+  "gold_list": ["evidence1", "evidence2", ...]
+}
+```
+
+**RAG Output ({ranker}\_{llm}.json):**
+
+```json
+{
+  "query": "question text",
+  "model_answer": "predicted answer",
+  "gold_answer": "gold answer",
+  "question_type": "inference_query"
+}
+```
+
+## Custom Evaluation Metrics
+
+The project extends baseline metrics with two custom implementations:
+
+1. **MyRetEval.py** - Adds NDCG@10 metric for retrieval evaluation
+
+   - Computes normalized discounted cumulative gain
+   - Accounts for ranking quality, not just binary relevance
+   - Usage: `python MyRetEval.py --input output/production/rankerA.json`
+
+2. **MyRagEval.py** - Adds Exact Match (EM) metric for RAG evaluation
+   - Binary score: 1 if prediction exactly matches gold answer (case-insensitive)
+   - Complements F1 score which gives partial credit
+   - Usage: `python MyRagEval.py output/production/llm-embedder-reranker_llama2.json`
+
+## Important Implementation Details
+
+### Model Configuration
+
+**Retrieval Models** (ranker\*.py):
+
+- A: `BAAI/llm-embedder` (instruction-tuned, best for complex queries)
+- B: `sentence-transformers/all-MiniLM-L6-v2` (lightweight, general-purpose)
+- C: `BAAI/bge-large-en-v1.5` (large variant, high accuracy)
+- D: `intfloat/multilingual-e5-large` (multilingual support, large variant)
+
+**Reranking Model** (reranker\*.py):
+
+- Uses `BAAI/bge-reranker-base` cross-encoder
+- Reranks top-10 retrieved documents for improved precision
+
+**LLM Models** (RAG\*.py):
+
+- A: `meta-llama/Llama-2-7b-chat-hf` (7B, Meta)
+- B: `meta-llama/Meta-Llama-3-8B-Instruct` (8B, Meta)
+- C: `mistralai/Mistral-7B-Instruct-v0.3` (7B, Mistral)
+- D: `Qwen/Qwen3-8B` (8B, Alibaba)
+
+Models auto-download to `~/.cache/huggingface/hub` if not cached.
+
+### GPU Considerations
+
+- Set `use_GPU = True` in config.py for GPU execution
+- Uses `torch.float16` to reduce memory from ~26GB to ~13GB
+- Llama-2-7b requires ~13GB VRAM (needs 24GB GPU with safety margin)
+- Monitor with `nvidia-smi` or `watch -n 1 nvidia-smi`
+- Use `tmux` or `screen` for long-running jobs on remote servers
+
+### Prompt Engineering
+
+**Critical:** The instruction prompts in RAG\*.py are tuned for evaluation compatibility.
+
+Default prompt structure:
 
 ```
-S<student_id>/
-├── report.pdf                    # 5-page experimental report
-├── MyREADME.md                  # Execution instructions
-├── requirements.txt              # pip freeze output
-├── ranker[A-D].py               # 4 retrieval variants
-├── rag[A-D].py                  # 4 LLM variants
-├── MyRAGEval.py                 # Custom evaluation metrics (optional)
-└── output/
-    ├── ranker[A-D].json         # Retrieval results
-    └── rag[A-D].json            # RAG results
+[INST] <<SYS>>
+You are a helpful assistant. Answer questions concisely based on the provided context.
+If the context does not contain enough information, respond with "Insufficient Information".
+<</SYS>>
+
+Context: {retrieved_documents}
+
+Question: {query}
+[/INST]
 ```
 
-**Critical Constraints**
+**Warning:** Modifying prompts may change output format and break evaluation scripts. If you change prompts, update `MyRagEval.py` answer extraction logic accordingly.
 
-- Use only STAGING=True for testing with sample data to conserve GPU time
-- Switch to STAGING=False only for final full-dataset runs
-- Each retrieval run ~1 hour, each LLM run ~2 hours on full dataset
-- Total experiment time must fit within 40-hour GPU allocation
+### Answer Cleaning
+
+RAG evaluation requires cleaning LLM outputs:
+
+```python
+# Remove model-specific tokens
+answer = answer.replace("</s>", "").replace("[/INST]", "")
+answer = answer.strip()
+```
+
+## Directory Structure
+
+```
+A2-v2.0/
+├── config.py                      # CENTRAL CONFIGURATION
+├── data/
+│   ├── corpus.json               # Full corpus (~1000 docs)
+│   ├── rag.json                  # Full queries (~200 questions)
+│   ├── sample-corpus.json        # Testing subset (10 docs)
+│   └── sample-rag.json           # Testing subset (5 queries)
+├── output/
+│   ├── staging/                  # Sample data outputs
+│   └── production/               # Full dataset outputs
+├── logs/
+│   ├── staging/                  # Sample run logs
+│   └── production/               # Production run logs
+├── ranker[A-D].py                # 4 retrieval variants
+├── reranker[A-B].py              # 2 reranking variants
+├── RAG[A-D].py                   # 4 LLM variants
+├── MyRetEval.py                  # Custom retrieval evaluator
+├── MyRagEval.py                  # Custom RAG evaluator
+├── run_rankers.sh                # Batch run all retrievers
+├── run_rag.sh                    # Batch run all RAG configs
+├── evaluate_rankers.sh           # Batch evaluate retrievers
+├── evaluate_rags.sh              # Batch evaluate RAG outputs
+├── example_*.py                  # Baseline reference scripts
+└── evaluate_*.py                 # Original evaluation scripts
+```
+
+## Experimental Design Strategy
+
+**Assignment Requirements:**
+
+- 4 different retrieval algorithms ✓ (rankerA-D)
+- 4 different LLMs ✓ (RAGA-D)
+- 2 additional evaluation metrics ✓ (NDCG@10, Exact Match)
+
+**Implemented Strategy:**
+
+1. Evaluate all 4 rankers + 2 rerankers on full dataset
+2. Select top 2 performers based on Hits@10, MAP@10, NDCG@10
+3. Run 2 rankers × 4 LLMs = 8 RAG configurations
+4. Evaluate with Precision, Recall, F1, Exact Match
+5. Report findings in 5-page experimental report
+
+**GPU Budget Management (40 hours total):**
+
+- Retrieval (6 configs × 1h) = 6h
+- RAG generation (8 configs × 2h) = 16h
+- Buffer for debugging/reruns = 18h
+
+**Best Practices:**
+
+- Always test with `is_STAGING = True` before production runs
+- Use `run_*.sh` scripts to avoid manual errors
+- Monitor logs in real-time: `tail -f logs/production/RAGA.log`
+- Validate output JSON format before evaluation
+
+## Environment Setup
+
+**GPU Server (NLPA2 environment):**
+
+```bash
+conda activate NLPA2
+export CUDA_VISIBLE_DEVICES=0  # If multi-GPU system
+```
+
+**Local Development:**
+
+```bash
+conda activate COMP4703A2
+# Ensure config.py has:
+# use_GPU = False
+# is_STAGING = True
+```
+
+**Dependencies** (pre-installed on GPU server):
+
+- PyTorch 2.x (CUDA 12.8 or CPU variant)
+- llama-index==0.9.40
+- transformers, sentence-transformers
+- FlagEmbedding (for reranking)
+- tqdm, psutil, pandas
+
+## Question Types
+
+The dataset includes 4 question types (affects evaluation):
+
+1. `inference_query` - Requires synthesizing info from multiple docs
+2. `comparison_query` - Compares entities across docs
+3. `temporal_query` - Requires temporal reasoning
+4. `null_query` - Unanswerable (expects "Insufficient Information")
+
+Evaluation scripts compute per-type and overall metrics.
+
+## Common Pitfalls
+
+1. **Forgetting to switch STAGING mode** - Always verify config.py before production runs
+2. **Hardcoding GPU settings** - Use config.use_GPU instead
+3. **Not cleaning LLM outputs** - Remove "</s>", "[/INST]" tokens for evaluation
+4. **Running out of GPU memory** - Use torch.float16, not float32
+5. **Session timeouts** - Use tmux/screen for long jobs
+6. **Wrong output paths** - config.OUTPUT_PATH auto-handles staging/production
+7. **Modifying prompts without updating evaluation** - Prompt changes may break metrics
+
+## Submission Checklist
+
+Final submission requires:
+
+- [ ] `report.pdf` (5 pages max)
+- [ ] `MyREADME.md` (execution instructions)
+- [ ] `requirements.txt` (pip freeze output)
+- [ ] `ranker[A-D].py` and `reranker[A-B].py`
+- [ ] `RAG[A-D].py`
+- [ ] `MyRetEval.py` and `MyRagEval.py`
+- [ ] `output/production/ranker*.json` (6 files)
+- [ ] `output/production/{ranker}_{llm}.json` (8 files)

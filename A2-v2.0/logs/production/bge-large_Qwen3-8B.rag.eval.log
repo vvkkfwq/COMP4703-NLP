@@ -1,27 +1,41 @@
 
   0%|          | 0/2556 [00:00<?, ?it/s]
- 19%|█▉        | 482/2556 [00:00<00:00, 4813.99it/s]
- 39%|███▉      | 1000/2556 [00:00<00:00, 5027.03it/s]
- 59%|█████▉    | 1507/2556 [00:00<00:00, 5043.87it/s]
- 79%|███████▉  | 2016/2556 [00:00<00:00, 5059.30it/s]
- 99%|█████████▉| 2527/2556 [00:00<00:00, 5075.59it/s]
-100%|██████████| 2556/2556 [00:00<00:00, 5050.74it/s]
+ 16%|█▌        | 411/2556 [00:00<00:00, 4106.72it/s]
+ 32%|███▏      | 822/2556 [00:00<00:00, 4025.19it/s]
+ 48%|████▊     | 1225/2556 [00:00<00:00, 3877.62it/s]
+ 63%|██████▎   | 1614/2556 [00:00<00:00, 3632.47it/s]
+ 77%|███████▋  | 1980/2556 [00:00<00:00, 3326.34it/s]
+ 91%|█████████ | 2317/2556 [00:00<00:00, 2753.10it/s]
+100%|██████████| 2556/2556 [00:00<00:00, 3037.38it/s]
 
+from config.py: project_root: /Users/vickeyfeng/Code/COMP4703-NLP/A2-v2.0
 Question Type: inference_query
- Precision: 1.00
- Recall: 1.00
- F1 Score: 1.00
- Exact Match: 1.00
+ Precision: 0.8759
+ Recall: 0.8794
+ F1 Score: 0.8728
+ Exact Match: 0.8382
 
 Question Type: comparison_query
- Precision: 0.00
- Recall: 0.00
- F1 Score: 0.00
- Exact Match: 0.00
+ Precision: 0.1763
+ Recall: 0.4264
+ F1 Score: 0.1813
+ Exact Match: 0.1332
+
+Question Type: null_query
+ Precision: 0.5339
+ Recall: 0.6944
+ F1 Score: 0.5390
+ Exact Match: 0.0000
+
+Question Type: temporal_query
+ Precision: 0.1463
+ Recall: 0.3911
+ F1 Score: 0.1488
+ Exact Match: 0.1081
 
 Overall Metrics:
- Precision: 0.80
- Recall: 0.80
- F1 Score: 0.80
- Exact Match: 0.80
+ Precision: 0.4349
+ Recall: 0.5945
+ F1 Score: 0.4368
+ Exact Match: 0.3369
 

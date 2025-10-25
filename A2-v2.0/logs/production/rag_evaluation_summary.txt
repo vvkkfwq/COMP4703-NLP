@@ -1,61 +1,61 @@
 ====================================== 
 RAG Evaluation Summary
-Date: Fri Oct 24 20:27:03 AEST 2025
+Date: Sat Oct 25 16:50:24 AEST 2025
 ====================================== 
 
 === LLM Embedder Reranker + Llama-2 ===
 Overall Metrics:
- Precision: 0.70
- Recall: 0.70
- F1 Score: 0.70
- Exact Match: 0.60
+ Precision: 0.2260
+ Recall: 0.4186
+ F1 Score: 0.2330
+ Exact Match: 0.2117
 
 === LLM Embedder Reranker + Llama-3 ===
 Overall Metrics:
- Precision: 0.70
- Recall: 0.80
- F1 Score: 0.73
- Exact Match: 0.60
+ Precision: 0.3380
+ Recall: 0.3450
+ F1 Score: 0.3361
+ Exact Match: 0.2680
 
 === LLM Embedder Reranker + Mistral-7B ===
 Overall Metrics:
- Precision: 0.80
- Recall: 0.80
- F1 Score: 0.80
- Exact Match: 0.80
+ Precision: 0.3262
+ Recall: 0.4430
+ F1 Score: 0.3371
+ Exact Match: 0.2692
 
 === LLM Embedder Reranker + Qwen3-8B ===
 Overall Metrics:
- Precision: 0.80
- Recall: 0.80
- F1 Score: 0.80
- Exact Match: 0.80
+ Precision: 0.4385
+ Recall: 0.5752
+ F1 Score: 0.4384
+ Exact Match: 0.3279
 
 === BGE Large + Llama-2 ===
 Overall Metrics:
- Precision: 0.80
- Recall: 0.61
- F1 Score: 0.63
- Exact Match: 0.60
+ Precision: 0.2329
+ Recall: 0.4154
+ F1 Score: 0.2392
+ Exact Match: 0.2164
 
 === BGE Large + Llama-3 ===
 Overall Metrics:
- Precision: 0.60
- Recall: 0.60
- F1 Score: 0.60
- Exact Match: 0.60
+ Precision: 0.3260
+ Recall: 0.3314
+ F1 Score: 0.3247
+ Exact Match: 0.2731
 
 === BGE Large + Mistral-7B ===
 Overall Metrics:
- Precision: 0.60
- Recall: 0.60
- F1 Score: 0.60
- Exact Match: 0.60
+ Precision: 0.3318
+ Recall: 0.4323
+ F1 Score: 0.3395
+ Exact Match: 0.2836
 
 === BGE Large + Qwen3-8B ===
 Overall Metrics:
- Precision: 0.80
- Recall: 0.80
- F1 Score: 0.80
- Exact Match: 0.80
+ Precision: 0.4349
+ Recall: 0.5945
+ F1 Score: 0.4368
+ Exact Match: 0.3369
 

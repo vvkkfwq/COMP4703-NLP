@@ -3,6 +3,8 @@ from tqdm import tqdm
 import re
 from collections import Counter
 
+from config import is_STAGING
+
 
 # Function to get the correct answer
 def get_gold(query_data, query):
@@ -62,7 +64,7 @@ def comp_metrics_new(pred_list, gold_list):
     recall_list = []
     f1_list = []
     for gold, pred in zip(gold_list, pred_list):
-        c, plen, glen = count_overlap(gold, pred)
+        c, glen, plen = count_overlap(gold, pred)
 
         # Compute Precision Directly
         if plen == 0:
@@ -174,10 +176,10 @@ def run_evaluation(predictions, gold_labels):
         precision, recall, f1 = comp_metrics_new(data["pred_list"], data["gold_list"])
         exact_match = calculate_exact_match(data["pred_list"], data["gold_list"])
         print(f"Question Type: {question_type}")
-        print(f" Precision: {precision:.2f}")
-        print(f" Recall: {recall:.2f}")
-        print(f" F1 Score: {f1:.2f}")
-        print(f" Exact Match: {exact_match:.2f}")
+        print(f" Precision: {precision:.4f}")
+        print(f" Recall: {recall:.4f}")
+        print(f" F1 Score: {f1:.4f}")
+        print(f" Exact Match: {exact_match:.4f}")
         print()
 
     # Calculate overall evaluation metrics
@@ -186,15 +188,14 @@ def run_evaluation(predictions, gold_labels):
     )
     overall_em = calculate_exact_match(overall_pred_list, overall_gold_list)
     print(f"Overall Metrics:")
-    print(f" Precision: {overall_precision:.2f}")
-    print(f" Recall: {overall_recall:.2f}")
-    print(f" F1 Score: {overall_f1:.2f}")
-    print(f" Exact Match: {overall_em:.2f}")
+    print(f" Precision: {overall_precision:.4f}")
+    print(f" Recall: {overall_recall:.4f}")
+    print(f" F1 Score: {overall_f1:.4f}")
+    print(f" Exact Match: {overall_em:.4f}")
 
 
 if __name__ == "__main__":
     # prediction_file = "output/llama2.json"
     prediction_file = sys.argv[1]
-    # gold_labels = "data/rag.json"
-    gold_labels = "data/sample-rag.json"
+    gold_labels = "data/sample-rag.json" if is_STAGING else "data/rag.json"
     run_evaluation(prediction_file, gold_labels)

@@ -1,22 +1,36 @@
 
   0%|          | 0/2556 [00:00<?, ?it/s]
-100%|██████████| 2556/2556 [00:00<00:00, 83172.80it/s]
+ 66%|██████▌   | 1690/2556 [00:00<00:00, 16891.72it/s]
+100%|██████████| 2556/2556 [00:00<00:00, 12137.73it/s]
 
+from config.py: project_root: /Users/vickeyfeng/Code/COMP4703-NLP/A2-v2.0
 Question Type: inference_query
- Precision: 0.88
- Recall: 1.00
- F1 Score: 0.92
- Exact Match: 0.75
+ Precision: 0.7697
+ Recall: 0.7644
+ F1 Score: 0.7629
+ Exact Match: 0.7096
 
 Question Type: comparison_query
- Precision: 0.00
- Recall: 0.00
- F1 Score: 0.00
- Exact Match: 0.00
+ Precision: 0.0484
+ Recall: 0.0678
+ F1 Score: 0.0489
+ Exact Match: 0.0479
+
+Question Type: null_query
+ Precision: 0.4290
+ Recall: 0.4319
+ F1 Score: 0.4294
+ Exact Match: 0.0000
+
+Question Type: temporal_query
+ Precision: 0.1120
+ Recall: 0.1201
+ F1 Score: 0.1123
+ Exact Match: 0.1115
 
 Overall Metrics:
- Precision: 0.70
- Recall: 0.80
- F1 Score: 0.73
- Exact Match: 0.60
+ Precision: 0.3380
+ Recall: 0.3450
+ F1 Score: 0.3361
+ Exact Match: 0.2680
 
