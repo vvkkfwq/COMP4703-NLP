@@ -6,6 +6,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a COMP4703 (Natural Language Processing) Assignment 2 project focused on implementing and evaluating Retrieval Augmented Generation (RAG) systems for multi-hop question answering. The project compares different retrieval algorithms and Large Language Models (LLMs) to determine optimal configurations.
 
+### Project Objective (CRITICAL - READ THIS FIRST)
+
+**Core Goal:** Experimentally study the various **performance trade-offs** in RAG systems when solving the "Multi-Hop Retrieval" problem.
+
+**Task Characteristics:**
+
+- **Problem Type:** Factoid question answering that requires more than one document to get the correct answer
+- **System Output:** Either answer the question succinctly based on instructions in a carefully crafted prompt, OR reply "Insufficient Data"
+- **Dataset:** Small factoid QA dataset for Multi-Hop QA (~1000 documents, ~200 questions)
+
+**RAG System Architecture (2-3 Stages):**
+
+1. **Stage 1 (Required):** First-stage retrieval - finds top-k most relevant documents from corpus
+2. **Stage 2 (Optional):** Reranking - refines first-stage results to improve effectiveness
+3. **Stage 3 (Required):** LLM generation - generates answer to the query using top-k documents
+
+**CRITICAL CHALLENGE - Non-orthogonal System Interactions:**
+
+> **"The 'best' first stage and 'best' second stage may not produce the 'best' overall results when combined."**
+
+This means:
+
+- Complex system interactions can be orthogonal
+- Subtle interactions between models are very unpredictable
+- **The ONLY way to determine the best overall system is through extensive careful experimentation**
+
+**Experimental Requirements:**
+
+1. Explore several different alternatives for each stage
+2. Write a **5-page experimental report** that includes:
+   - Explanation of how each method works
+   - Exhaustive experimental study comparing and contrasting approaches
+   - Identification of the best overall system
+   - Analysis of performance trade-offs and component interactions
+
+**Report Goal:** Compare and contrast the approaches used in order to find the best overall system, with detailed analysis of why certain combinations work better than others despite individual component performance.
+
 ## Centralized Configuration System
 
 **CRITICAL:** All runtime settings are managed through [config.py](config.py). Never hardcode these values in individual scripts.

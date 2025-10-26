@@ -1,0 +1,340 @@
+\documentclass[10pt,twocolumn]{article}
+
+% Package imports
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+% Reduce spacing to fit 5 pages
+\setlength{\columnsep}{0.25in}
+\setlength{\parskip}{0.5em}
+\setlength{\abovecaptionskip}{5pt}
+\setlength{\belowcaptionskip}{5pt}
+
+% Hyperref settings
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% Title and author information
+\title{\vspace{-2em}\textbf{Multi-Hop Retrieval Augmented Generation Systems: \\
+A Comparative Experimental Study}\vspace{1em}}
+
+
+
+\author{
+    \textbf{\large Weiqi Feng}\\[-0.2em]
+    \small Student ID: \texttt{s4860387}\\[-0.2em]
+    \small \texttt{weiqi.feng@student.uq.edu.au}\\[-0.2em]
+    \small COMP4703 Natural Language Processing\\[-0.2em]
+    \small The University of Queensland
+}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\vspace{-1em}
+
+% ==========================================
+% ABSTRACT (Optional but recommended)
+% ==========================================
+\begin{abstract}
+    This report presents a comprehensive experimental study of Retrieval Augmented Generation (RAG) systems for multi-hop question answering. We evaluate four retrieval algorithms and two reranking configurations, selecting the top two performers to combine with four large language models across 8 RAG configurations. Our experiments demonstrate that system performance is highly sensitive to question types, with the best configuration (llm-embedder-reranker + Qwen3-8B) achieving F1 = 0.44 overall but exhibiting a 5.8× performance gap between inference queries (F1 = 0.87) and comparison/temporal queries (F1 = 0.15--0.18). We introduce NDCG@10 and Exact Match as additional metrics and show that LLM selection impacts end-to-end performance far more than retriever optimization. This work provides insights into the critical bottlenecks and design considerations for multi-hop QA systems.
+\end{abstract}
+
+\vspace{-0.5em}
+
+% ==========================================
+% 1. INTRODUCTION (1 mark)
+% ==========================================
+\section{Introduction}
+
+Multi-hop question answering represents a challenging problem in natural language processing where answers require synthesizing information from multiple documents \cite{yangHotpotQADatasetDiverse2018}. Unlike simple factoid questions such as ``Who won the 2020 Nobel Prize in Physics?'' that can be answered from a single source, multi-hop queries like ``Compare the population growth rates of cities mentioned in the 2020 census reports'' necessitate identifying, retrieving, and reasoning across multiple disparate documents. This complexity introduces unique challenges for both information retrieval and answer generation components.
+
+Retrieval Augmented Generation (RAG) systems have emerged as a powerful paradigm to address these challenges by combining dense retrieval with large language models (LLMs). These systems operate in a two-stage pipeline: (1) a retrieval stage that identifies and ranks top-$k$ relevant documents from a large corpus using dense embeddings, and (2) a generation stage where an LLM synthesizes a coherent answer by reasoning over the retrieved context. This architecture has demonstrated significant improvements over pure parametric language models by grounding generations in external knowledge.
+
+However, the effectiveness of RAG systems depends critically on multiple interacting factors. First, the choice of retrieval algorithm determines which documents reach the LLM, with different embedding models exhibiting varying capabilities in capturing semantic similarity for complex queries. Second, reranking mechanisms can refine initial retrieval results but introduce computational overhead and potential recall-precision trade-offs. Third, the generation model's ability to extract and synthesize information from multiple retrieved documents varies significantly across different LLM architectures and training paradigms. Finally, and perhaps most critically, different question types (e.g., inference, comparison, temporal reasoning) may require fundamentally different retrieval and reasoning strategies.
+
+\textbf{Research Questions.} This experiment try to address the following research questions:
+
+\begin{itemize}[leftmargin=*, itemsep=0pt]
+    \item \textbf{RQ1:} Which dense retrieval algorithms provide the best recall and ranking quality for multi-hop queries, and how does reranking affect this trade-off?
+    \item \textbf{RQ2:} How do different LLMs perform when generating answers from retrieved documents?
+    \item \textbf{RQ3:} Does retrieval quality correlate with end-to-end RAG performance?
+    \item \textbf{RQ4:} How does system performance vary across different question types?
+\end{itemize}
+
+% ==========================================
+% 2. METHODOLOGY (2 marks)
+% ==========================================
+\section{Methodology}
+
+This study follows a systematic three-stage pipeline to identify optimal RAG configurations and analyze component interactions:
+
+\subsection{First-Stage Retrieval Algorithms}
+
+Four dense retrieval algorithms and two reranking configurations (6 total) are evaluated on the corpus using standard retrieval metrics (Hits@k, MAP@10, MRR@10) and a custom NDCG@10 metric. The top 2 performers are selected for downstream evaluation.
+
+\subsubsection{Ranker A: BAAI/llm-embedder}
+
+BAAI/llm-embedder \cite{zhangRetrieveAnythingAugment2023} is an instruction-tuned dense retrieval model specifically designed to enhance embedding quality for diverse retrieval tasks.
+
+The model was trained on a large-scale corpus combining general-domain retrieval pairs and instruction-following data, using contrastive learning with hard negative mining. This training paradigm enables the model to adapt its embedding space based on task instructions, potentially improving performance on complex multi-hop queries where understanding query intent is critical.
+
+\subsubsection{Ranker B: all-MiniLM-L6-v2}
+
+The all-MiniLM-L6-v2 model is a compact sentence embedding model from the Sentence-Transformers framework, designed to provide efficient and general-purpose semantic representations. This model represents a trade-off between model size and embedding quality, making it suitable for resource-constrained environments.
+
+The key differences from Ranker A include: (1) significantly smaller model size, (2) no instruction-based conditioning mechanism. This makes it an ideal baseline to assess whether lightweight general-purpose models can compete with larger specialized retrieval models on multi-hop QA tasks.
+
+\subsubsection{Ranker C: BAAI/bge-large-en-v1.5}
+
+BAAI/bge-large-en-v1.5 is a large-scale dense retrieval model designed specifically for high-quality English text embeddings.
+
+Unlike Ranker A's instruction-tuning or Ranker B's general semantic similarity focus, BGE-Large is explicitly optimized for document retrieval tasks through its training objective and data selection strategy.
+
+This design prioritizes raw retrieval quality over efficiency or instructability, making it suitable for evaluating the performance ceiling of pure dense retrieval approaches in multi-hop QA scenarios.
+
+
+\subsubsection{Ranker D: intfloat/multilingual-e5-large}
+
+The multilingual-e5-large model \cite{wangMultilingualE5Text2024} is a multilingual text embedding model designed to provide consistent semantic representations across 100+ languages.
+
+The model uses language-agnostic tokenization and shared embedding space to enable cross-lingual semantic search. While the dataset in this study is English-only, evaluating a multilingual model allows assessment of whether multilingual training acts as beneficial effect.
+
+This configuration tests whether investing model capacity in multilingual capabilities provides advantages for monolingual English retrieval tasks, or whether specialized English models offer superior performance through focused optimization.
+
+\subsubsection{Reranker A \& B: intfloat/multilingual-e5-large}
+
+Beyond the four base retrievers, two reranking configurations are evaluated by applying BAAI/bge-reranker-base as a second-stage refinement. The reranker refines the initial top-20 results from base retrievers, reordering them based on cross-encoder scores.
+
+Reranker A combines llm-embedder with bge-reranker-base, testing whether instruction-tuned retrieval benefits from reranking. Reranker B pairs all-MiniLM-L6-v2 with the same reranker, assessing whether reranking can compensate for limitations of lightweight base retrievers. These configurations enable analysis of reranking's effectiveness across different base retriever characteristics and inform cost-benefit trade-offs between single-stage versus two-stage retrieval approaches.
+
+
+\subsection{Large Language Models Selection}
+
+Following Stage 1 evaluation, selecting the two best-performing retrievers to combine with four diverse open-source LLMs representing different model families and training approaches are selected for evaluation. The 2 best retrievers are combined with all 4 LLMs, yielding 8 RAG configurations. Each configuration is evaluated on end-to-end question answering performance using Precision, Recall, F1 Score, and a custom Exact Match metric, with results decomposed by question type.
+
+
+\subsubsection{LLM A: meta-llama/Llama-2-7b-chat-hf}
+
+Llama-2-7b-chat-hf \cite{touvronLlama2Open2023} is a 7B parameter conversational model from Meta AI, fine-tuned with supervised learning and reinforcement learning from human feedback. As an earlier-generation chat model, it serves as a baseline to assess whether newer instruction-tuned LLMs provide substantial improvements for multi-hop question answering tasks.
+
+\subsubsection{LLM B: meta-llama/Meta-Llama-3-8B-Instruct}
+
+Meta-Llama-3-8B-Instruct is an 8B parameter instruction-following model representing the next generation of Meta's Llama series. Trained on 15 trillion tokens with improved tokenizer efficiency and architectural refinements, Llama-3 offers enhanced instruction-following capabilities and multilingual support. This model enables direct comparison with its predecessor (LLM A) to quantify generational improvements in RAG performance.
+
+\subsubsection{LLM C: mistralai/Mistral-7B-Instruct-v0.3}
+
+Mistral-7B-Instruct-v0.3 \cite{jiangMistral7B2023} is a 7B parameter model from Mistral AI featuring sliding window attention and grouped-query attention mechanisms for efficient long-context processing. Despite having fewer parameters than Llama-3, Mistral demonstrates competitive performance through architectural innovations optimized for instruction-following tasks.
+
+This model provides a third-party alternative to assess whether different architectural approaches offer distinct advantages for multi-hop reasoning.
+
+\subsubsection{LLM D: Qwen/Qwen3-8B}
+
+Qwen3-8B \cite{yangQwen3TechnicalReport2025} is an 8B parameter model from Alibaba Cloud's Qwen series, trained on multilingual data with strong performance on Chinese and English tasks. The model employs a mixture-of-experts inspired architecture and extensive instruction tuning on diverse reasoning tasks.
+
+As a non-Western model with different training paradigms, Qwen3 provides a complementary perspective to evaluate whether training data diversity and architectural variations impact RAG effectiveness for English multi-hop QA.
+
+\subsection{Evaluation Metrics}
+
+This study employ multiple evaluation metrics to comprehensively assess system performance.
+
+\subsubsection{Retrieval Metrics}
+
+For retrial evaluation, five standard information retrieval metrics are employed to assess retrieval quality from different perspectives:
+
+\textbf{Hits@k:} Measuring the proportion of queries for which at least one relevant document appears in the top-k results. Hits@10 evaluates overall coverage, while Hits@4 emphasizes higher-ranked positions.
+
+\textbf{MAP@10:} Evaluates ranking quality by averaging precision at each relevant document position.
+
+\textbf{MRR@10:} Measures how early the first relevant document appears, emphasizing top positions.
+
+\textbf{nDCG@10:} A custom metric introduced in this study to account for graded relevance and position-based discounting. nDCG provides a more nuanced evaluation by considering ranking quality with logarithmic position decay.
+
+\subsubsection{RAG System Metrics}
+
+For RAG evaluation, four metrics assess answer quality from complementary perspectives:
+
+\textbf{Precision:}  Precision measures the proportion of predicted tokens that appear in the gold answer.
+
+\textbf{Recall:} Recall measures the proportion of gold tokens captured by the prediction.
+
+\textbf{F1 Score:} Harmonic mean of Precision and Recall, providing a balanced assessment of answer quality:
+$$
+    F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+$$
+
+\textbf{Exact Match (EM):} Assigns a binary score of 1 if the predicted answer exactly matches the gold answer after case normalization and whitespace removal, and 0 otherwise.
+
+% ==========================================
+% 3. EXPERIMENTS (3 marks)
+% ==========================================
+\section{Experiments}
+
+\subsection{Experimental Setup}
+
+\subsubsection{Dataset}
+Our experiments use a multi-hop question answering dataset consisting of 2556 queries and a corpus of 609 documents. Each query requires synthesizing information from multiple documents to produce a correct answer. The dataset includes gold-standard annotations indicating relevant documents and correct answers.
+
+% \subsubsection{Implementation Details}
+% All experiments were conducted using the Llama Index framework \cite{llamaindex} on NVIDIA A100 GPUs with 24GB memory. We used the following hyperparameters:
+% \begin{itemize}[leftmargin=*, itemsep=0pt]
+%     \item Top-k documents retrieved: $k = [value]$
+%     \item LLM temperature: $T = [value]$
+%     \item Maximum generation length: [X] tokens
+%     \item Batch size: [X]
+% \end{itemize}
+
+\subsection{Retrieval Results}
+
+Table~\ref{tab:retrieval_results} presents the performance of four retrieval algorithms and two reranker algorithms on the multi-hop QA dataset.
+
+\begin{table*}[t]
+    \centering
+    \caption{Retrieval performance comparison. Best results in \textbf{bold}.}
+    \label{tab:retrieval_results}
+    \footnotesize
+    \setlength{\tabcolsep}{1.6em}
+    \begin{tabular}{llcccc}
+        \toprule
+        \textbf{Ranker} & \textbf{Model}                  & \textbf{Hits@10} & \textbf{MAP@10} & \textbf{MRR@10} & \textbf{NDCG@10} \\
+        \midrule
+        Ranker A        & llm-embedder                    & 0.5348           & 0.1408          & 0.3299          & 0.4690           \\
+        Reranker A      & llm-embedder + bge-reranker     & 0.6204           & \textbf{0.2149} & \textbf{0.4936} & 0.6614           \\
+        \midrule
+        Ranker B        & all-MiniLM-L6-v2                & 0.5100           & 0.1337          & 0.2955          & 0.4403           \\
+        Reranker B      & all-MiniLM-L6-v2 + bge-reranker & 0.5965           & 0.2119          & 0.4702          & 0.6390           \\
+        \midrule
+        Ranker C        & bge-large-en-v1.5               & \textbf{0.6896}  & 0.1997          & 0.4520          & \textbf{0.6845}  \\
+        \midrule
+        Ranker D        & multilingual-e5-large           & 0.6213           & 0.1580          & 0.3752          & 0.4912           \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+\textbf{Analysis:} Ranker C (BGE-Large) achieved the highest recall and NDCG scores (Hits@10 = 0.6896, NDCG@10 = 0.6845), demonstrating superior ability to retrieve relevant documents without reranking. The strong performance of Ranker C across all metrics validates the effectiveness of specialized large-scale retrieval models for multi-hop QA tasks.
+
+Examining reranker effectiveness reveals distinct patterns across base retriever scales. For the lightweight Ranker B (all-MiniLM-L6-v2), reranking produced substantial improvements: +17.0\% in Hits@10 (0.5100 → 0.5965), +58.5\% in MAP@10 (0.1337 → 0.2119), and +59.1\% in MRR@10 (0.2955 → 0.4702). In contrast, Reranker A applied to the larger llm-embedder base yielded more modest gains: +16.0\% in Hits@10 (0.5348 → 0.6204), +52.6\% in MAP@10, and +49.6\% in MRR@10. This suggests that reranking provides greater relative benefits for smaller base retrievers by compensating for their limited semantic understanding, though absolute performance remains constrained by initial retrieval quality.
+
+Ranker D (multilingual-e5-large) exhibited intermediate performance (Hits@10 = 0.6213, NDCG@10 = 0.4912), significantly outperforming the lightweight Ranker B and the instruction-tuned Ranker A, but trailing the specialized English retriever Ranker C. Despite its strong recall performance, the relatively lower NDCG@10 compared to its Hits@10 suggests that while multilingual-e5-large successfully identifies relevant documents, its ranking quality suffers from capacity allocation across multiple languages. This indicates that for monolingual English tasks, dedicated large-scale English models like BGE-Large can achieve superior ranking quality, though multilingual models offer a competitive balance between coverage and cross-lingual capability.
+
+Based on these results, we selected Ranker C and Reranker A for downstream RAG experiments, as they represent complementary strategies: Ranker C maximizes recall for comprehensive document coverage, while Reranker A optimizes ranking precision through two-stage refinement.
+
+\subsection{RAG System Results}
+
+Table~\ref{tab:rag_results} presents the end-to-end performance of eight RAG system configurations (2 retrievers × 4 LLMs).
+
+\begin{table*}[t]
+    \centering
+    \caption{RAG system performance comparison. Best result per retriever in \textbf{bold}.}
+    \label{tab:rag_results}
+    \footnotesize
+    \setlength{\tabcolsep}{2.6em}
+    \begin{tabular}{llcccc}
+        \toprule
+        \textbf{Retriever} & \textbf{LLM} & \textbf{Precision} & \textbf{Recall} & \textbf{F1}     & \textbf{EM}     \\
+        \midrule
+        \multirow{4}{*}{\shortstack[l]{Reranker A                                                                    \\(llm-embedder\\+ bge-reranker)}}
+                           & Llama-2-7b   & 0.2260             & 0.4186          & 0.2330          & 0.2117          \\
+                           & Llama-3-8B   & 0.3380             & 0.3450          & 0.3361          & 0.2680          \\
+                           & Mistral-7B   & 0.3262             & 0.4430          & 0.3371          & 0.2692          \\
+                           & Qwen3-8B     & \textbf{0.4385}    & \textbf{0.5752} & \textbf{0.4384} & \textbf{0.3279} \\
+        \midrule
+        \multirow{4}{*}{\shortstack[l]{Ranker C                                                                      \\(bge-large)}}
+                           & Llama-2-7b   & 0.2329             & 0.4154          & 0.2392          & 0.2164          \\
+                           & Llama-3-8B   & 0.3260             & 0.3314          & 0.3247          & 0.2731          \\
+                           & Mistral-7B   & 0.3318             & 0.4323          & 0.3395          & 0.2836          \\
+                           & Qwen3-8B     & \textbf{0.4349}    & \textbf{0.5945} & \textbf{0.4368} & \textbf{0.3369} \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+\textbf{Analysis:} The best overall system combined Reranker A (llm-embedder + bge-reranker) with Qwen3-8B, achieving F1 = 0.4384, though Ranker C (bge-large) paired with Qwen3-8B achieved nearly identical performance (F1 = 0.4368, difference = 0.4\%). Qwen3-8B consistently outperformed all other LLMs across both retrievers, with F1 scores 29\% higher than Mistral-7B (0.3395) and 88\% higher than Llama-2 (0.2330).
+
+Notably, retriever selection had minimal impact on performance: the F1 difference between Ranker C and Reranker A when paired with Qwen3-8B was only 0.4\% (0.4368 vs 0.4384), despite a 3.5\% difference in retrieval NDCG@10. This suggests that LLM selection is far more critical than retriever optimization for RAG performance, and that strong LLMs like Qwen3-8B possess robust tolerance to variations in retrieval quality.
+
+\subsection{Question Type Analysis}
+
+To understand system performance across different reasoning requirements, I decompose results by question type for the best-performing configuration (Reranker A + Qwen3-8B). Table~\ref{tab:question_type} presents performance metrics across four question categories.
+
+\begin{table}[h]
+    \centering
+    \caption{Performance by question type for llm-embedder-reranker + Qwen3-8B. Best results in \textbf{bold}.}
+    \label{tab:question_type}
+    \footnotesize
+    \setlength{\tabcolsep}{6pt}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Question Type} & \textbf{Precision} & \textbf{Recall} & \textbf{F1}     & \textbf{EM}     \\
+        \midrule
+        Inference              & \textbf{0.8716}    & \textbf{0.8759} & \textbf{0.8637} & \textbf{0.8150} \\
+        Null                   & 0.5902             & 0.7292          & 0.5948          & 0.0000          \\
+        Comparison             & 0.1648             & 0.3692          & 0.1685          & 0.1238          \\
+        Temporal               & 0.1557             & 0.3774          & 0.1586          & 0.1149          \\
+        \midrule
+        \textbf{Overall}       & \textbf{0.4385}    & \textbf{0.5752} & \textbf{0.4384} & \textbf{0.3279} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{Analysis:} The results reveal extreme performance variation across question types, with a 5.4× gap between the best (Inference, F1 = 0.8637) and worst categories (Temporal, F1 = 0.1586). Inference queries achieve near-practical performance (F1 = 0.8637, EM = 0.8150), demonstrating that the RAG pipeline effectively handles multi-document reasoning tasks where answers can be directly extracted from retrieved context.
+
+In stark contrast, Comparison (F1 = 0.1685) and Temporal queries (F1 = 0.1586) exhibit near-failure performance, indicating fundamental limitations in multi-document synthesis and temporal reasoning. The high Recall/low Precision pattern for these categories (Comparison: 0.3692/0.1648, Temporal: 0.3774/0.1557) suggests that while relevant documents are partially retrieved, the LLM struggles to synthesize cross-document information or maintain temporal coherence. This represents the primary bottleneck for multi-hop QA systems.
+
+Null queries show intermediate performance (F1 = 0.5948) but zero Exact Match across all configurations, indicating that models can identify unanswerable questions but use inconsistent phrasing. This highlights a need for prompt engineering to standardize output formats.
+
+Critically, the overall F1 score (0.4384) masks this 5.4× performance gap, demonstrating that aggregate metrics provide misleading assessments of multi-hop QA systems. System evaluation must decompose results by question type to identify true capabilities and bottlenecks.
+
+% ==========================================
+% 4. CONCLUSIONS (1 mark)
+% ==========================================
+\section{Conclusions}
+
+This work presented a comprehensive experimental study of RAG systems for multi-hop question answering. Through systematic evaluation of six retrieval configurations and four LLMs, we identified optimal system configurations and analyzed performance trade-offs.
+
+\subsection{Key Findings}
+
+Our main findings are:
+\begin{enumerate}[leftmargin=*, itemsep=0pt]
+    \item \textbf{Retrieval:} BGE-Large (Ranker C) achieved the best single-stage retrieval with NDCG@10 = 0.6845, while Reranker A (llm-embedder + bge-reranker) achieved the best ranking precision with MAP@10 = 0.2149 and MRR@10 = 0.4936.
+    \item \textbf{Generation:} Qwen3-8B significantly outperformed all other LLMs, achieving F1 = 0.4384 and EM = 0.3279, representing 30\% improvement over Mistral-7B (F1 = 0.3395) and 88\% over Llama-2 (F1 = 0.2330). LLM selection proving far more critical than retriever optimization---switching LLMs improved performance by up to 88\%, while switching retrievers had negligible impact (0.4\%).
+    \item \textbf{Question Type Sensitivity:} Performance varied dramatically by question type, with a 5.4× gap: Inference queries achieved near-practical performance (F1 = 0.8637, EM = 0.8150), while Comparison and Temporal queries exhibited near-failure performance (F1 = 0.1685--0.1586), revealing that multi-document synthesis represents the primary bottleneck for multi-hop QA systems.
+\end{enumerate}
+
+\subsection{Future Work}
+
+The extreme performance gap across question types suggests three priority research directions:
+
+\textbf{(1) Comparison \& Temporal Query Enhancement:} Both question types exhibit near-failure performance (F1 = 0.16--0.17). Future work should explore prompt engineering techniques to guide multi-document synthesis, and investigate query decomposition methods that break complex queries into simpler sub-queries to improve retrieval accuracy and answer quality.
+
+\textbf{(2) Multilingual Source Evaluation:} While multilingual models underperformed on English-only data, testing with truly multilingual document collections would validate cross-lingual retrieval benefits for global knowledge bases.
+
+% ==========================================
+% REFERENCES (1 mark)
+% ==========================================
+% Use \bibliographystyle{plain} or another style
+% Create a .bib file with your references
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
