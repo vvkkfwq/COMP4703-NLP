@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-# Use the conda run command instead of activating
-CONDA_ENV="COMP4703A2"
-WORKING_DIR="/Users/vickeyfeng/Code/COMP4703-NLP/A2-v2.0"
+# Activate conda environment
+source /conda/etc/profile.d/conda.sh
+conda activate NLPA2
+export PATH=/conda/envs/NLPA2/bin:$PATH
+
+PYTHON="/conda/envs/NLPA2/bin/python"
+WORKING_DIR="$HOME/A2-v2.0"
 cd "$WORKING_DIR"
 
 # Read STAGING status
@@ -42,8 +46,8 @@ for i in "${!RANKERS[@]}"; do
     echo "[${idx}/6] Evaluating ${ranker}..."
     
     if [ -f "$input_file" ]; then
-        # Use conda run to execute in the environment
-        conda run -n ${CONDA_ENV} python MyRetEval.py --input "$input_file" 2>&1 | tee "$eval_log"
+        # Execute in the activated environment
+        ${PYTHON} MyRetEval.py --input "$input_file" 2>&1 | tee "$eval_log"
         
         echo "=== ${ranker} ===" >> "${SUMMARY_FILE}"
         grep -E "Hits@|MAP@|MRR@|NDCG@" "$eval_log" >> "${SUMMARY_FILE}"
