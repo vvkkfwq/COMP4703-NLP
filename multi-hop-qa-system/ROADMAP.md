@@ -12,9 +12,9 @@
 
 corpus.json 入库，建立检索索引。
 
-- [ ] 解析 corpus.json，按 `body` 字段分块，其余都在 metadata 保留
-- [ ] BGE-Large embedding 入库 ChromaDB
-- [ ] BM25 索引同步构建
+- [x] 解析 corpus.json，按 `body` 字段分块，其余都在 metadata 保留
+- [x] BGE-Large embedding 入库 ChromaDB
+- [x] BM25 索引同步构建
 
 ---
 
@@ -22,10 +22,10 @@ corpus.json 入库，建立检索索引。
 
 完整 RAG pipeline 跑通。
 
-- [ ] 语义检索（BGE-Large + ChromaDB）
-- [ ] Cross-encoder Reranker
-- [ ] BM25 + 语义混合检索（RRF 融合）
-- [ ] LangChain 串联检索 → Prompt → OpenAI API 生成
+- [x] 语义检索（BGE-Large + ChromaDB）
+- [x] Cross-encoder Reranker
+- [x] BM25 + 语义混合检索（RRF 融合）
+- [x] LangChain 串联检索 → Prompt → OpenAI API 生成
 
 ---
 

@@ -16,16 +16,15 @@ from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from rank_bm25 import BM25Okapi
-
-# Configure
-CORPUS_PATH = Path("data/sample-corpus.json")
-CHROMA_DIR = Path("chroma_db")
-BM25_PATH = Path("bm25_index.pkl")
-
-EMBED_MODEL = "BAAI/bge-large-en-v1.5"
-CHUNK_SIZE = 512
-CHUNK_OVERLAP = 64
-BATCH_SIZE = 64
+from src.config import (
+    CORPUS_PATH,
+    CHROMA_DIR,
+    BM25_PATH,
+    EMBED_MODEL,
+    CHUNK_SIZE,
+    CHUNK_OVERLAP,
+    BATCH_SIZE,
+)
 
 
 def load_corpus(path: Path) -> list[Document]:
