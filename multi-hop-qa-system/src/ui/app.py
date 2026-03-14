@@ -16,15 +16,22 @@ if str(_ROOT) not in sys.path:
 
 import streamlit as st
 
-from src.config import RAG_PATH
+from src.config import RAG_PATH, EMBED_MODELS, EMBED_MODEL_DEFAULT, TOP_K
 from src.evaluation.metrics import token_f1
 from src.pipeline.rag import RAGPipeline
 from src.retriever import (
     BM25Retriever,
-    CrossEncoderReranker,
     HybridRetriever,
     SemanticRetriever,
 )
+
+STRATEGIES: list[tuple[str, bool, bool]] = [
+    ("Semantic", False, False),
+    ("Semantic + Rerank", False, True),
+    ("Hybrid", True, False),
+    ("Hybrid + Rerank", True, True),
+]
+
 
 # ─── Page config ─────────────────────────────────────────────────────────────
 
@@ -42,6 +49,8 @@ def _doc_score(doc) -> str:
     meta = doc.metadata
     if "_rerank_score" in meta:
         return f"{meta['_rerank_score']:.4f} (rerank)"
+    if "_rrf_score" in meta:
+        return f"{meta['_rrf_score']:.4f} (rrf)"
     if "_score" in meta:
         return f"{meta['_score']:.4f} (semantic)"
     return "N/A"
@@ -50,13 +59,39 @@ def _doc_score(doc) -> str:
 # ─── Cached resource loaders ─────────────────────────────────────────────────
 
 
-@st.cache_resource(show_spinner="Loading models (first run only)…")
-def load_pipeline() -> RAGPipeline:
-    semantic = SemanticRetriever()
-    bm25 = BM25Retriever()
-    reranker = CrossEncoderReranker()
-    hybrid = HybridRetriever(semantic=semantic, bm25=bm25, reranker=reranker)
-    return RAGPipeline(retriever=hybrid)
+@st.cache_resource(show_spinner="Loading embedding model…")
+def _get_semantic_retriever(model_key: str, enable_reranker: bool) -> SemanticRetriever:
+    cfg = EMBED_MODELS[model_key]
+    return SemanticRetriever(
+        chroma_dir=cfg["chroma_dir"],
+        embedding_model=cfg["model_name"],
+        enable_reranker=enable_reranker,
+    )
+
+
+@st.cache_resource(show_spinner="Loading BM25 index…")
+def _get_bm25_retriever() -> BM25Retriever:
+    return BM25Retriever()
+
+
+def _build_retriever(model_key: str, use_bm25: bool, enable_reranker: bool):
+    semantic = _get_semantic_retriever(model_key, enable_reranker)
+    if use_bm25:
+        return HybridRetriever(
+            semantic=semantic,
+            bm25=_get_bm25_retriever(),
+            enable_reranker=enable_reranker,
+        )
+    return semantic
+
+
+@st.cache_resource
+def build_pipeline(
+    model_key: str, use_bm25: bool, enable_reranker: bool
+) -> RAGPipeline:
+
+    retriever = _build_retriever(model_key, use_bm25, enable_reranker)
+    return RAGPipeline(retriever)
 
 
 @st.cache_data(show_spinner=False)
@@ -69,7 +104,8 @@ def load_qa_data() -> list[dict]:
 
 st.title("🔍 Multi-Hop QA System")
 
-pipeline = load_pipeline()
+strategy_name, use_bm25, enable_reranker = STRATEGIES[0]
+pipeline = build_pipeline(EMBED_MODEL_DEFAULT, use_bm25, enable_reranker)  # 默认
 qa_data = load_qa_data()
 
 # ── Sidebar / mode selector ──────────────────────────────────────────────────

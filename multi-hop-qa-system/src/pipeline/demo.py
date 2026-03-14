@@ -9,7 +9,6 @@ from src.config import RAG_PATH
 from src.pipeline.rag import RAGPipeline
 from src.retriever import (
     BM25Retriever,
-    CrossEncoderReranker,
     HybridRetriever,
     SemanticRetriever,
 )
@@ -29,8 +28,7 @@ def main():
     print("初始化检索器 ...")
     semantic = SemanticRetriever()
     bm25 = BM25Retriever()
-    reranker = CrossEncoderReranker()
-    hybrid = HybridRetriever(semantic=semantic, bm25=bm25, reranker=reranker)
+    hybrid = HybridRetriever(semantic=semantic, bm25=bm25, enable_reranker=True)
 
     pipeline = RAGPipeline(retriever=hybrid)
 

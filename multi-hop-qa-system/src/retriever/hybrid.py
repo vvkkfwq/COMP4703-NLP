@@ -16,13 +16,14 @@ class HybridRetriever:
         self,
         semantic: SemanticRetriever,
         bm25: BM25Retriever,
-        reranker: CrossEncoderReranker | None = None,
+        enable_reranker: bool = False,
         rrf_k: int = RRF_K,
         top_k: int = TOP_K,
     ):
         self.semantic = semantic
         self.bm25 = bm25
-        self.reranker = reranker
+        self.enable_reranker = enable_reranker
+        self.reranker = CrossEncoderReranker()
         self.rrf_k = rrf_k
         self.top_k = top_k
 
@@ -53,7 +54,7 @@ class HybridRetriever:
             doc.metadata["_rrf_score"] = scores[key]
             fused.append(doc)
 
-        if self.reranker:
+        if self.enable_reranker:
             fused = self.reranker.rerank(query, fused, top_k=k)
 
         return fused
