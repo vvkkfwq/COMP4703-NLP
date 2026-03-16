@@ -11,6 +11,7 @@ CHROMA_DIR = BASE_DIR / "chroma_db"
 BM25_PATH = BASE_DIR / "bm25_index.pkl"
 CORPUS_PATH = DATA_DIR / "sample-corpus.json"
 RAG_PATH = DATA_DIR / "sample-rag.json"
+METRICS_PATH = DATA_DIR / "retrieval_metrics.json"
 
 # Embedding
 EMBED_MODEL = "BAAI/bge-large-en-v1.5"
@@ -48,6 +49,12 @@ BATCH_SIZE = 64
 TOP_K = 10
 RERANKER_MODEL = "BAAI/bge-reranker-base"
 RRF_K = 60
+STRATEGIES = [
+    ("Semantic", False, False),
+    ("Semantic + Rerank", False, True),
+    ("Hybrid", True, False),
+    ("Hybrid + Rerank", True, True),
+]
 
 # LLM
 LLM_MODEL = "gpt-4o-mini"

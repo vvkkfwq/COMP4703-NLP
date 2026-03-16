@@ -1,5 +1,5 @@
 """
-评估指标 — token_f1, retrieval_metrics (NDCG@k, MAP@k, MRR@k)
+评估指标 — token_f1, retrieval_metrics (NDCG@k, MAP@k, MRR@k, Hits@10)
 """
 
 from __future__ import annotations
@@ -48,10 +48,19 @@ def retrieval_metrics(
     if not relevant:
         return None, None, None, None
 
-    hits = [
-        1 if doc.metadata.get("title", "").strip().lower() in relevant else 0
-        for doc in retrieved_docs[:k]
-    ]
+    # hits = [
+    #     1 if doc.metadata.get("title", "").strip().lower() in relevant else 0
+    #     for doc in retrieved_docs[:k]
+    # ]
+    seen_titles: set[str] = set()
+    hits = []
+    for doc in retrieved_docs[:k]:
+        title = doc.metadata.get("title", "").strip().lower()
+        if title in relevant and title not in seen_titles:
+            hits.append(1)
+            seen_titles.add(title)
+        else:
+            hits.append(0)
 
     # MRR@k
     mrr = next((1.0 / rank for rank, rel in enumerate(hits, 1) if rel), 0.0)
