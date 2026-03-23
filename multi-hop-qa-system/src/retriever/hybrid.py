@@ -24,10 +24,13 @@ class HybridRetriever(BaseRetriever):
     top_k: int = TOP_K
 
     def model_post_init(self, context: Any) -> None:
-        """初始化 semantic、bm25、reranker 实例"""
-        self.semantic = SemanticRetriever()
-        self.bm25 = BM25Retriever()
-        self.reranker = CrossEncoderReranker()
+        """初始化 semantic、bm25、reranker 实例。"""
+        if self.semantic is None:
+            self.semantic = SemanticRetriever()
+        if self.bm25 is None:
+            self.bm25 = BM25Retriever()
+        if self.enable_reranker and self.reranker is None:
+            self.reranker = CrossEncoderReranker()
 
         super().model_post_init(context)
 
@@ -63,7 +66,7 @@ class HybridRetriever(BaseRetriever):
             doc.metadata["_rrf_score"] = scores[key]
             fused.append(doc)
 
-        if self.enable_reranker:
+        if self.enable_reranker and self.reranker is not None:
             fused = self.reranker.rerank(query, fused, top_k=k)
 
         return fused

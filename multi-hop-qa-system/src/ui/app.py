@@ -65,12 +65,12 @@ def _result_docs(payload: dict | None) -> list:
 
 
 @st.cache_resource(show_spinner="Loading embedding model…")
-def _get_semantic_retriever(model_key: str, enable_reranker: bool) -> SemanticRetriever:
+def _get_semantic_retriever(model_key: str) -> SemanticRetriever:
     cfg = EMBED_MODELS[model_key]
     return SemanticRetriever(
         chroma_dir=str(cfg["chroma_dir"]),
         embedding_model=cfg["model_name"],
-        enable_reranker=enable_reranker,
+        enable_reranker=False,
     )
 
 
@@ -80,19 +80,25 @@ def _get_bm25_retriever() -> BM25Retriever:
 
 
 def _build_retriever(model_key: str, use_bm25: bool, enable_reranker: bool):
-    semantic = _get_semantic_retriever(
-        model_key, enable_reranker if not use_bm25 else False
-    )
+    semantic = _get_semantic_retriever(model_key)
     if use_bm25:
         return HybridRetriever(
             semantic=semantic,
             bm25=_get_bm25_retriever(),
             enable_reranker=enable_reranker,
         )
+    if enable_reranker:
+        # 复用已缓存的 Chroma/vectorstore，仅为当前策略按需启用 reranker。
+        return SemanticRetriever(
+            chroma_dir=semantic.chroma_dir,
+            embedding_model=semantic.embedding_model,
+            top_k=semantic.top_k,
+            enable_reranker=True,
+            vectorstore=semantic.vectorstore,
+        )
     return semantic
 
 
-@st.cache_resource(show_spinner=False)
 def build_pipeline(
     model_key: str, use_bm25: bool, enable_reranker: bool
 ) -> RAGPipeline:

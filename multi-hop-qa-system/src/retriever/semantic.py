@@ -28,21 +28,22 @@ class SemanticRetriever(BaseRetriever):
     reranker: Any = None
 
     def model_post_init(self, context: Any) -> None:
+        if self.vectorstore is None:
+            # 仅在未注入 vectorstore 时初始化 embedding + Chroma
+            embed = HuggingFaceEmbeddings(
+                model_name=self.embedding_model,
+                encode_kwargs={"normalize_embeddings": True},
+                model_kwargs={"device": EMBED_DEVICE},
+            )
+            self.vectorstore = Chroma(
+                persist_directory=str(self.chroma_dir), embedding_function=embed
+            )
 
-        # 初始化 Embeddings
-        embed = HuggingFaceEmbeddings(
-            model_name=self.embedding_model,
-            encode_kwargs={"normalize_embeddings": True},
-            model_kwargs={"device": EMBED_DEVICE},
-        )
-
-        # 初始化 Chroma vectorstore
-        self.vectorstore = Chroma(
-            persist_directory=str(self.chroma_dir), embedding_function=embed
-        )
-
-        # 固定加载 reranker
-        self.reranker = CrossEncoderReranker()
+        # 仅在启用时加载 reranker，避免无用的大模型常驻内存
+        if self.enable_reranker and self.reranker is None:
+            self.reranker = CrossEncoderReranker()
+        if not self.enable_reranker:
+            self.reranker = None
 
         # 必须调用父类的 model_post_init，确保 LangChain 内部逻辑执行
         super().model_post_init(context)
@@ -62,6 +63,6 @@ class SemanticRetriever(BaseRetriever):
             doc.metadata["_score"] = float(score)
             docs.append(doc)
 
-        if self.enable_reranker:
+        if self.enable_reranker and self.reranker is not None:
             docs = self.reranker.rerank(query, docs, top_k=k)
         return docs
