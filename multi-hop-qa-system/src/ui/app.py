@@ -183,6 +183,19 @@ else:
 
 ask_clicked = st.button("Ask", type="primary", disabled=not (query and query.strip()))
 
+# Clear stale output when user switches question without submitting.
+current_query_key = (mode, (query or "").strip())
+previous_query_key = st.session_state.get("current_query_key")
+if (
+    previous_query_key is not None
+    and previous_query_key != current_query_key
+    and not ask_clicked
+):
+    st.session_state["result"] = None
+    st.session_state["compare_results"] = None
+    st.session_state["pending_stream"] = False
+st.session_state["current_query_key"] = current_query_key
+
 # ── Session state: run pipeline on button click ───────────────────────────────
 
 if ask_clicked and query and query.strip():
