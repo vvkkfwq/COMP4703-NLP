@@ -24,6 +24,7 @@ from src.config import (
     STRATEGIES,
 )
 from src.evaluation.metrics import token_f1
+from src.pipeline.multi_hop_rag import MultiHopRAGPipeline, MultiHopResult
 from src.pipeline.rag import RAGPipeline
 from src.retriever import (
     BM25Retriever,
@@ -107,6 +108,13 @@ def build_pipeline(
     return RAGPipeline(retriever)
 
 
+def build_multi_hop_pipeline(
+    model_key: str, use_bm25: bool, enable_reranker: bool
+) -> MultiHopRAGPipeline:
+    retriever = _build_retriever(model_key, use_bm25, enable_reranker)
+    return MultiHopRAGPipeline(retriever)
+
+
 @st.cache_data(show_spinner=False)
 def load_qa_data() -> list[dict]:
     with open(RAG_PATH) as f:
@@ -132,6 +140,7 @@ qa_data = load_qa_data()
 with st.sidebar:
     st.header("Settings")
     mode = st.radio("Mode", ["Preset questions", "Free-form"], index=0)
+    pipeline_mode = st.radio("Pipeline", ["Single-hop", "Multi-hop"], index=0)
     st.divider()
 
 with st.sidebar:
@@ -144,7 +153,11 @@ with st.sidebar:
     )
     use_bm25 = st.toggle("BM25 + RRF", value=True)
     enable_reranker = st.toggle("Reranker (bge-reranker-base)", value=True)
-    compare_mode = st.checkbox("Compare all 4 strategies", value=False)
+    compare_mode = st.checkbox(
+        "Compare all 4 strategies",
+        value=False,
+        disabled=(pipeline_mode == "Multi-hop"),
+    )
 
     st.divider()
 
