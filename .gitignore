@@ -21,3 +21,6 @@ venv/
 
 # NLTK data (可选，看大小)
 nltk_data/
+
+# Chroma vector database
+multi-hop-qa-system/chroma_db/
