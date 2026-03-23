@@ -3,29 +3,38 @@
 RRF 公式: score(d) = Σ 1 / (k + rank(d))，k=60
 """
 
-from langchain_core.documents import Document
+from typing import Any
 
 from src.config import RRF_K, TOP_K
 from .bm25_retriever import BM25Retriever
 from .reranker import CrossEncoderReranker
 from .semantic import SemanticRetriever
+from langchain_core.documents import Document
+from langchain_core.retrievers import BaseRetriever
+from langchain_core.callbacks import CallbackManagerForRetrieverRun
 
 
-class HybridRetriever:
-    def __init__(
-        self,
-        semantic: SemanticRetriever,
-        bm25: BM25Retriever,
-        enable_reranker: bool = False,
-        rrf_k: int = RRF_K,
-        top_k: int = TOP_K,
-    ):
-        self.semantic = semantic
-        self.bm25 = bm25
-        self.enable_reranker = enable_reranker
+class HybridRetriever(BaseRetriever):
+
+    semantic: Any = None
+    bm25: Any = None
+    enable_reranker: bool = False
+    reranker: Any = None
+    rrf_k: int = RRF_K
+    top_k: int = TOP_K
+
+    def model_post_init(self, context: Any) -> None:
+        """初始化 semantic、bm25、reranker 实例"""
+        self.semantic = SemanticRetriever()
+        self.bm25 = BM25Retriever()
         self.reranker = CrossEncoderReranker()
-        self.rrf_k = rrf_k
-        self.top_k = top_k
+
+        super().model_post_init(context)
+
+    def _get_relevant_documents(
+        self, query, *, run_manager: CallbackManagerForRetrieverRun
+    ) -> list[Document]:
+        return self.retrieve(query)
 
     def retrieve(self, query: str, top_k: int | None = None) -> list[Document]:
         k = top_k or self.top_k

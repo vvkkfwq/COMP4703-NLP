@@ -142,11 +142,11 @@ def run(self, query: str) -> dict:
 
 **⚠️ Breaking change（与旧接口的差异）：**
 
-| 旧键 | 新键 / 状态 | 影响 |
-| ---- | ---------- | ---- |
-| `retrieved_docs` | 改为 `docs` | `app.py` 多处访问 `result["retrieved_docs"]` 会 `KeyError` |
-| `sources` | 移除 | `app.py` 不再直接使用，调用方自行从 `docs` 的 metadata 提取 |
-| `answer` | 保留 | 不变 |
+| 旧键             | 新键 / 状态 | 影响                                                        |
+| ---------------- | ----------- | ----------------------------------------------------------- |
+| `retrieved_docs` | 改为 `docs` | `app.py` 多处访问 `result["retrieved_docs"]` 会 `KeyError`  |
+| `sources`        | 移除        | `app.py` 不再直接使用，调用方自行从 `docs` 的 metadata 提取 |
+| `answer`         | 保留        | 不变                                                        |
 
 `app.py` 的适配（将 `result["retrieved_docs"]` 改为 `result["docs"]`、移除 `sources` 依赖）**推迟到 UI 适配 milestone**，本 milestone 合入后 app.py 会有 KeyError，属已知可接受的中间状态。
 

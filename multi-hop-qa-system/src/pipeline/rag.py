@@ -8,8 +8,11 @@ from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from operator import itemgetter
 
-from src.config import LLM_MODEL, TOP_K
+from src.config import LLM_MODEL
 
 load_dotenv()
 
@@ -28,27 +31,42 @@ PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
 )
 
 
+def format_docs(docs: list[Document]) -> str:
+    return "\n\n---\n\n".join(doc.page_content for doc in docs)
+
+
 class RAGPipeline:
-    def __init__(self, retriever, model: str = LLM_MODEL, top_k: int = TOP_K):
+    def __init__(self, retriever, model: str = LLM_MODEL):
         self.retriever = retriever
-        self.top_k = top_k
         self.llm = ChatOpenAI(
             model=model,
             temperature=0.1,
             api_key=os.environ["OPENAI_API_KEY"],
         )
-        self.chain = PROMPT_TEMPLATE | self.llm
+
+        self.chain = (
+            RunnablePassthrough.assign(docs=itemgetter("question") | retriever)
+            | RunnablePassthrough.assign(context=lambda x: format_docs(x["docs"]))
+            | RunnablePassthrough.assign(
+                answer=(
+                    {
+                        "question": itemgetter("question"),
+                        "context": itemgetter("context"),
+                    }
+                    | PROMPT_TEMPLATE
+                    | self.llm
+                    | StrOutputParser()
+                )
+            )
+        )
 
     def run(self, query: str) -> dict:
-        docs: list[Document] = self.retriever.retrieve(query, top_k=self.top_k)
-        context = "\n\n---\n\n".join(doc.page_content for doc in docs)
-        response = self.chain.invoke({"context": context, "question": query})
-        sources = [
-            {k: v for k, v in doc.metadata.items() if not k.startswith("_")}
-            for doc in docs
-        ]
-        return {
-            "answer": response.content,
-            "sources": sources,
-            "retrieved_docs": docs,
-        }
+        return self.chain.invoke({"question": query})
+
+    def stream(self, query: str):
+        docs = self.retriever.invoke(query)
+        context = format_docs(docs)
+
+        yield from (PROMPT_TEMPLATE | self.llm | StrOutputParser()).stream(
+            {"question": query, "context": context}
+        )
