@@ -213,12 +213,23 @@ if (
     st.session_state["result"] = None
     st.session_state["compare_results"] = None
     st.session_state["pending_stream"] = False
+    st.session_state["multi_hop_result"] = None
+    st.session_state["pending_mh_stream"] = False
 st.session_state["current_query_key"] = current_query_key
 
 # ── Session state: run pipeline on button click ───────────────────────────────
 
 if ask_clicked and query and query.strip():
-    if compare_mode:
+    if pipeline_mode == "Multi-hop":
+        with st.spinner("Decomposing question and retrieving…"):
+            p = build_multi_hop_pipeline(model_key, use_bm25, enable_reranker)
+            mh_result = p.retrieve(query)
+        st.session_state["multi_hop_result"] = mh_result
+        st.session_state["pending_mh_stream"] = True
+        st.session_state["result"] = None
+        st.session_state["compare_results"] = None
+        st.session_state["pending_stream"] = False
+    elif compare_mode:
         with st.spinner("Running 4 strategy configurations…"):
             compare_results = {}
             for label, bm25_flag, rerank_flag in STRATEGIES:
@@ -234,6 +245,7 @@ if ask_clicked and query and query.strip():
         st.session_state["result"] = {"question": query, "retrieved_docs": docs}
         st.session_state["pending_stream"] = True
         st.session_state["compare_results"] = None
+    st.session_state["last_pipeline_mode"] = pipeline_mode
     st.session_state["last_query"] = query
     st.session_state["last_mode"] = mode
     st.session_state["last_qa"] = selected_qa
@@ -250,6 +262,9 @@ last_model_key = st.session_state.get("last_model_key")
 last_use_bm25 = st.session_state.get("last_use_bm25", True)
 last_enable_reranker = st.session_state.get("last_enable_reranker", True)
 pending_stream = st.session_state.get("pending_stream", False)
+last_pipeline_mode = st.session_state.get("last_pipeline_mode", "Single-hop")
+multi_hop_result = st.session_state.get("multi_hop_result")
+pending_mh_stream = st.session_state.get("pending_mh_stream", False)
 
 # ── Output ────────────────────────────────────────────────────────────────────
 
