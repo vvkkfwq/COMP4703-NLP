@@ -40,6 +40,62 @@ make run
 # Visit http://localhost:8501
 ```
 
+## Development Commands
+
+All commands should be run from the repository root.
+
+### Setup & Installation
+
+```bash
+# Activate conda environment
+conda activate rag
+
+# Install dependencies (if needed)
+pip install -r requirements.txt
+
+# Or install pytest for testing
+pip install pytest
+```
+
+### Build & Index
+
+```bash
+# Rebuild Chroma vector store and BM25 index from sample corpus
+python -m src.pipeline.ingest
+
+# Build all retrieval indexes with different embedding models
+python -m src.pipeline.build_all_indexes
+
+# Compute retrieval metrics on the entire sample-rag.json
+python -m src.pipeline.build_metrics
+```
+
+### Testing
+
+```bash
+# Run all unit tests (fast, no external dependencies)
+pytest tests/ -k "not integration" -v
+
+# Run a specific test file
+pytest tests/test_rag_pipeline.py -v
+
+# Run with detailed output
+pytest tests/ -k "not integration" --tb=short -v
+
+# Run tests with coverage
+pytest tests/ -k "not integration" --cov=src --cov-report=html
+```
+
+### Running the App
+
+```bash
+# Start the Streamlit UI
+streamlit run src/ui/app.py
+
+# Run a quick smoke test of the full pipeline
+python -m src.pipeline.demo
+```
+
 ## Demo
 
 ## Evaluation Results

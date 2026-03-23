@@ -4,6 +4,7 @@ This repository uses [AGENTS.md](/Users/vvkkfwq/Code/COMP4703-NLP/multi-hop-qa-s
 
 ## Quick Context
 
+- Conda environment: `rag`
 - App entry point: `streamlit run src/ui/app.py`
 - Index build: `python -m src.pipeline.ingest`
 - Smoke test: `python -m src.pipeline.demo`

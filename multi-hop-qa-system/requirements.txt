@@ -1,0 +1,11 @@
+langchain-chroma
+langchain-core
+langchain-huggingface
+langchain-openai
+langchain-text-splitters
+python-dotenv
+pytest
+rank-bm25
+sentence-transformers
+streamlit
+tqdm

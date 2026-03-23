@@ -56,9 +56,9 @@ corpus.json 入库，建立检索索引。
 **背景**：当前 retriever 完全绕开 LangChain 生态，pipeline 仅用了 prompt 格式化，
 面试层面无法体现 LangChain 深度。本 milestone 将检索层接入标准接口，统一用 LCEL 串联。
 
-- [ ] `SemanticRetriever` / `HybridRetriever` 继承 `BaseRetriever`，实现 `_get_relevant_documents()`
-- [ ] `rag.py` 改用 LCEL pipe 语法：`retriever | format_docs` → `PROMPT` → `LLM` → `StrOutputParser()`
-- [ ] 支持流式输出（`chain.stream()`），Streamlit 用 `st.write_stream()` 展示
+- [x] `SemanticRetriever` / `HybridRetriever` 继承 `BaseRetriever`，实现 `_get_relevant_documents()`
+- [x] `rag.py` 改用 LCEL pipe 语法：`retriever | format_docs` → `PROMPT` → `LLM` → `StrOutputParser()`
+- [x] 支持流式输出（`chain.stream()`），Streamlit 用 `st.write_stream()` 展示
 
 ---
 

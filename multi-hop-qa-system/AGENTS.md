@@ -25,6 +25,8 @@ The current implementation already has Milestones 1-3 largely in place. The next
 
 Run commands from the repository root.
 
+- `conda activate rag`: activate the project Conda environment before running Python commands.
+
 - `python -m src.pipeline.ingest`: rebuild Chroma and BM25 indexes from the sample corpus.
 - `python -m src.pipeline.demo`: run a smoke test of the full RAG pipeline on the first preset sample.
 - `streamlit run src/ui/app.py`: start the interactive QA UI.
