@@ -55,6 +55,12 @@ def _doc_score(doc) -> str:
     return "N/A"
 
 
+def _result_docs(payload: dict | None) -> list:
+    if not payload:
+        return []
+    return payload.get("retrieved_docs") or payload.get("docs") or []
+
+
 # ─── Cached resource loaders ─────────────────────────────────────────────────
 
 
@@ -62,7 +68,7 @@ def _doc_score(doc) -> str:
 def _get_semantic_retriever(model_key: str, enable_reranker: bool) -> SemanticRetriever:
     cfg = EMBED_MODELS[model_key]
     return SemanticRetriever(
-        chroma_dir=cfg["chroma_dir"],
+        chroma_dir=str(cfg["chroma_dir"]),
         embedding_model=cfg["model_name"],
         enable_reranker=enable_reranker,
     )
@@ -151,7 +157,7 @@ with st.sidebar:
                         "Hits@10": f"{m['Hits@10']:.4f}" if m.get("Hits@10") else "—",
                     }
                 )
-            st.dataframe(rows, use_container_width=True, hide_index=True)
+            st.dataframe(rows, width="stretch", hide_index=True)
             st.caption(f"Model: {EMBED_MODELS[model_key]['label']} · k=10")
         except FileNotFoundError:
             st.caption("Run `build_metrics.py` first.")
@@ -188,15 +194,20 @@ if ask_clicked and query and query.strip():
                 compare_results[label] = p.run(query)
         st.session_state["compare_results"] = compare_results
         st.session_state["result"] = None
+        st.session_state["pending_stream"] = False
     else:
-        with st.spinner("Retrieving and generating…"):
+        with st.spinner("Retrieving documents…"):
             p = build_pipeline(model_key, use_bm25, enable_reranker)
-            st.session_state["result"] = p.run(query)
+            docs = p.retriever.invoke(query)
+        st.session_state["result"] = {"question": query, "retrieved_docs": docs}
+        st.session_state["pending_stream"] = True
         st.session_state["compare_results"] = None
     st.session_state["last_query"] = query
     st.session_state["last_mode"] = mode
     st.session_state["last_qa"] = selected_qa
     st.session_state["last_model_key"] = model_key
+    st.session_state["last_use_bm25"] = use_bm25
+    st.session_state["last_enable_reranker"] = enable_reranker
 
 # Retrieve stored result (survives widget re-renders)
 compare_results = st.session_state.get("compare_results")
@@ -204,6 +215,9 @@ result = st.session_state.get("result")
 last_mode = st.session_state.get("last_mode")
 last_qa = st.session_state.get("last_qa")
 last_model_key = st.session_state.get("last_model_key")
+last_use_bm25 = st.session_state.get("last_use_bm25", True)
+last_enable_reranker = st.session_state.get("last_enable_reranker", True)
+pending_stream = st.session_state.get("pending_stream", False)
 
 # ── Output ────────────────────────────────────────────────────────────────────
 
@@ -214,14 +228,15 @@ if compare_results:
     cols = st.columns(4)
     for col, (label, _, _) in zip(cols, STRATEGIES):
         r = compare_results[label]
+        docs = _result_docs(r)
         with col:
             st.markdown(f"#### {label}")
             if last_mode == "Preset questions" and last_qa:
                 f1 = token_f1(r["answer"], last_qa.get("answer", ""))
                 st.metric("Token-F1", f"{f1:.1%}")
             st.info(r["answer"])
-            st.caption(f"Sources ({len(r['retrieved_docs'])})")
-            for i, doc in enumerate(r["retrieved_docs"][:5], 1):
+            st.caption(f"Sources ({len(docs)})")
+            for i, doc in enumerate(docs[:5], 1):
                 title = doc.metadata.get("title", "Untitled")[:50]
                 st.markdown(f"**{i}.** {title}  \n`{_doc_score(doc)}`")
 
@@ -230,10 +245,24 @@ elif result:
 
     # ── Answer ────────────────────────────────────────────────────────────────
     st.subheader("Answer")
-    st.info(result["answer"])
+    if pending_stream and st.session_state.get("last_query"):
+        p = build_pipeline(last_model_key, last_use_bm25, last_enable_reranker)
+        docs = _result_docs(result)
+        answer = st.write_stream(p.stream(st.session_state["last_query"], docs=docs))
+        result = {
+            "question": st.session_state["last_query"],
+            "answer": answer,
+            "retrieved_docs": docs,
+        }
+        st.session_state["result"] = result
+        st.session_state["pending_stream"] = False
+        pending_stream = False
+    else:
+        st.markdown(result["answer"])
 
     # ── Sources ───────────────────────────────────────────────────────────────
-    docs = result["retrieved_docs"]
+    st.divider()
+    docs = _result_docs(result)
     st.subheader(f"Retrieved Sources ({len(docs)})")
 
     for i, doc in enumerate(docs, 1):

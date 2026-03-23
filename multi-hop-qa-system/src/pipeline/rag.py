@@ -63,8 +63,9 @@ class RAGPipeline:
     def run(self, query: str) -> dict:
         return self.chain.invoke({"question": query})
 
-    def stream(self, query: str):
-        docs = self.retriever.invoke(query)
+    def stream(self, query: str, docs: list[Document] | None = None):
+        if docs is None:
+            docs = self.retriever.invoke(query)
         context = format_docs(docs)
 
         yield from (PROMPT_TEMPLATE | self.llm | StrOutputParser()).stream(
