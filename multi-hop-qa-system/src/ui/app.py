@@ -284,6 +284,7 @@ if last_pipeline_mode == "Multi-hop" and multi_hop_result is not None:
                 st.caption("No documents retrieved for this sub-question.")
 
     # ── Answer ────────────────────────────────────────────────────────────
+    st.divider()
     st.subheader("Answer")
     if pending_mh_stream:
         p = build_multi_hop_pipeline(
@@ -348,8 +349,7 @@ if last_pipeline_mode == "Multi-hop" and multi_hop_result is not None:
             st.markdown("**Expected Evidence Sources**")
             if evidence_list:
                 retrieved_titles = {
-                    doc.metadata.get("title", "").strip().lower()
-                    for doc in docs
+                    doc.metadata.get("title", "").strip().lower() for doc in docs
                 }
                 rows = []
                 for ev in evidence_list:
