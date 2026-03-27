@@ -129,15 +129,15 @@ class AgentRAGPipeline:
 
 ## 复用与不改动范围
 
-| 组件 | 处理方式 |
-|---|---|
-| `multi_hop_rag.py` 中的 `merge_docs()` | 直接复用 |
-| `multi_hop_rag.py` 中的 `_format_docs()` | 直接复用 |
-| `multi_hop_rag.py` 中的 `_ANSWER_PROMPT` | 直接复用 |
-| `rag.py` | 不改动 |
-| `multi_hop_rag.py` | 不改动 |
-| 检索器层 | 不改动 |
-| 评估 / metrics | 不在本次范围内 |
+| 组件                                     | 处理方式       |
+| ---------------------------------------- | -------------- |
+| `multi_hop_rag.py` 中的 `merge_docs()`   | 直接复用       |
+| `multi_hop_rag.py` 中的 `_format_docs()` | 直接复用       |
+| `multi_hop_rag.py` 中的 `_ANSWER_PROMPT` | 直接复用       |
+| `rag.py`                                 | 不改动         |
+| `multi_hop_rag.py`                       | 不改动         |
+| 检索器层                                 | 不改动         |
+| 评估 / metrics                           | 不在本次范围内 |
 
 ---
 

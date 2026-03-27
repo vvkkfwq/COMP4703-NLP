@@ -24,6 +24,7 @@ from src.config import (
     STRATEGIES,
 )
 from src.evaluation.metrics import token_f1
+from src.pipeline.agent_rag import AgentRAGPipeline
 from src.pipeline.multi_hop_rag import MultiHopRAGPipeline, MultiHopResult
 from src.pipeline.rag import RAGPipeline
 from src.retriever import (
@@ -115,6 +116,13 @@ def build_multi_hop_pipeline(
     return MultiHopRAGPipeline(retriever)
 
 
+def build_agent_pipeline(
+    model_key: str, use_bm25: bool, enable_reranker: bool
+) -> AgentRAGPipeline:
+    retriever = _build_retriever(model_key, use_bm25, enable_reranker)
+    return AgentRAGPipeline(retriever)
+
+
 @st.cache_data(show_spinner=False)
 def load_qa_data() -> list[dict]:
     with open(RAG_PATH) as f:
@@ -140,7 +148,7 @@ qa_data = load_qa_data()
 with st.sidebar:
     st.header("Settings")
     mode = st.radio("Mode", ["Preset questions", "Free-form"], index=0)
-    pipeline_mode = st.radio("Pipeline", ["Single-hop", "Multi-hop"], index=0)
+    pipeline_mode = st.radio("Pipeline", ["Single-hop", "Multi-hop", "Agent"], index=0)
     st.divider()
 
 with st.sidebar:
@@ -156,7 +164,7 @@ with st.sidebar:
     compare_mode = st.checkbox(
         "Compare all 4 strategies",
         value=False,
-        disabled=(pipeline_mode == "Multi-hop"),
+        disabled=(pipeline_mode in ("Multi-hop", "Agent")),
     )
 
     st.divider()
@@ -215,12 +223,25 @@ if (
     st.session_state["pending_stream"] = False
     st.session_state["multi_hop_result"] = None
     st.session_state["pending_mh_stream"] = False
+    st.session_state["agent_result"] = None
+    st.session_state["pending_agent_stream"] = False
 st.session_state["current_query_key"] = current_query_key
 
 # ── Session state: run pipeline on button click ───────────────────────────────
 
 if ask_clicked and query and query.strip():
-    if pipeline_mode == "Multi-hop":
+    if pipeline_mode == "Agent":
+        with st.spinner("Running agentic retrieval…"):
+            p = build_agent_pipeline(model_key, use_bm25, enable_reranker)
+            agent_state = p.run(query)
+        st.session_state["agent_result"] = agent_state
+        st.session_state["pending_agent_stream"] = True
+        st.session_state["result"] = None
+        st.session_state["compare_results"] = None
+        st.session_state["pending_stream"] = False
+        st.session_state["multi_hop_result"] = None
+        st.session_state["pending_mh_stream"] = False
+    elif pipeline_mode == "Multi-hop":
         with st.spinner("Decomposing question and retrieving…"):
             p = build_multi_hop_pipeline(model_key, use_bm25, enable_reranker)
             mh_result = p.retrieve(query)
@@ -265,10 +286,109 @@ pending_stream = st.session_state.get("pending_stream", False)
 last_pipeline_mode = st.session_state.get("last_pipeline_mode", "Single-hop")
 multi_hop_result = st.session_state.get("multi_hop_result")
 pending_mh_stream = st.session_state.get("pending_mh_stream", False)
+agent_result = st.session_state.get("agent_result")
+pending_agent_stream = st.session_state.get("pending_agent_stream", False)
 
 # ── Output ────────────────────────────────────────────────────────────────────
 
-if last_pipeline_mode == "Multi-hop" and multi_hop_result is not None:
+if last_pipeline_mode == "Agent" and agent_result is not None:
+    st.divider()
+
+    # ── Agent 推理轨迹 ─────────────────────────────────────────────────────
+    st.subheader("Agent 推理轨迹")
+    for i, hop in enumerate(agent_result["trace"], 1):
+        with st.expander(f'Hop {i} — "{hop["query"]}"', expanded=True):
+            if hop["reasoning"]:
+                st.markdown(f"*{hop['reasoning']}*")
+            if hop["docs"]:
+                for j, doc in enumerate(hop["docs"], 1):
+                    title = doc.metadata.get("title", "Untitled")[:60]
+                    st.markdown(f"**{j}.** {title}  \n`{_doc_score(doc)}`")
+            else:
+                st.caption("本跳未检索到文档。")
+
+    # ── Answer ────────────────────────────────────────────────────────────
+    st.divider()
+    st.subheader("Answer")
+    if pending_agent_stream:
+        p = build_agent_pipeline(last_model_key, last_use_bm25, last_enable_reranker)
+        try:
+            answer = st.write_stream(p.stream_answer(agent_result))
+            updated = dict(agent_result)
+            updated["answer"] = answer
+            st.session_state["agent_result"] = updated
+        finally:
+            st.session_state["pending_agent_stream"] = False
+    else:
+        st.markdown(agent_result["answer"])
+
+    # ── Sources ───────────────────────────────────────────────────────────
+    st.divider()
+    docs = agent_result["retrieved_docs"]
+    st.subheader(f"Retrieved Sources ({len(docs)})")
+    for i, doc in enumerate(docs, 1):
+        meta = doc.metadata
+        title = meta.get("title", "Untitled")
+        source_pub = meta.get("source", "")
+        pub_date = meta.get("published_at", "")[:10] if meta.get("published_at") else ""
+        url = meta.get("url", "")
+        score_str = _doc_score(doc)
+        label = f"[{i}] {title}"
+        if source_pub:
+            label += f" — {source_pub}"
+        with st.expander(label, expanded=(i == 1)):
+            col_a, col_b, col_c = st.columns([3, 2, 2])
+            with col_a:
+                st.markdown(f"**Source:** {source_pub or '—'}")
+            with col_b:
+                st.markdown(f"**Published:** {pub_date or '—'}")
+            with col_c:
+                st.markdown(f"**Score:** {score_str}")
+            if url:
+                st.link_button("Open article ↗", url)
+            st.markdown("**Excerpt:**")
+            excerpt = doc.page_content
+            st.markdown(
+                f'<div style="background:#f8f9fa;padding:10px;border-radius:6px;'
+                f'font-size:0.9em;line-height:1.5">{excerpt[:700]}{"…" if len(excerpt) > 700 else ""}</div>',
+                unsafe_allow_html=True,
+            )
+
+    # ── Preset-only evaluation ────────────────────────────────────────────
+    if last_mode == "Preset questions" and last_qa is not None:
+        st.divider()
+        st.subheader("Evaluation")
+        ground_truth: str = last_qa.get("answer", "")
+        evidence_list: list[dict] = last_qa.get("evidence_list", [])
+        f1 = token_f1(agent_result["answer"], ground_truth)
+        col_left, col_right = st.columns(2)
+        with col_left:
+            st.metric("Token-F1", f"{f1:.1%}")
+            st.markdown(f"**Ground Truth Answer:** {ground_truth}")
+            q_type = last_qa.get("question_type", "")
+            if q_type:
+                st.caption(f"Question type: `{q_type}`")
+        with col_right:
+            st.markdown("**Expected Evidence Sources**")
+            if evidence_list:
+                retrieved_titles = {
+                    doc.metadata.get("title", "").strip().lower() for doc in docs
+                }
+                rows = []
+                for ev in evidence_list:
+                    ev_title = ev.get("title", "").strip()
+                    hit = ev_title.lower() in retrieved_titles
+                    icon = "✅" if hit else "❌"
+                    ev_source = ev.get("source", "")
+                    rows.append(
+                        f"{icon} **{ev_title}**"
+                        + (f" — {ev_source}" if ev_source else "")
+                    )
+                st.markdown("\n\n".join(rows))
+            else:
+                st.caption("No evidence list available.")
+
+elif last_pipeline_mode == "Multi-hop" and multi_hop_result is not None:
     st.divider()
 
     # ── Sub-question Breakdown ────────────────────────────────────────────

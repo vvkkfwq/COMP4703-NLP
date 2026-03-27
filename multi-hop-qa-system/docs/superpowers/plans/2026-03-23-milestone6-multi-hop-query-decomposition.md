@@ -12,21 +12,22 @@
 
 ## 文件结构
 
-| 操作 | 路径 | 职责 |
-|---|---|---|
-| 新建 | `src/pipeline/multi_hop_rag.py` | 数据类 + `MultiHopRAGPipeline` + 内部纯函数 |
-| 新建 | `tests/test_multi_hop_rag.py` | `multi_hop_rag.py` 的单元测试 |
-| 修改 | `src/ui/app.py` | Pipeline radio · session state · 多跳渲染分支 |
+| 操作 | 路径                            | 职责                                          |
+| ---- | ------------------------------- | --------------------------------------------- |
+| 新建 | `src/pipeline/multi_hop_rag.py` | 数据类 + `MultiHopRAGPipeline` + 内部纯函数   |
+| 新建 | `tests/test_multi_hop_rag.py`   | `multi_hop_rag.py` 的单元测试                 |
+| 修改 | `src/ui/app.py`                 | Pipeline radio · session state · 多跳渲染分支 |
 
 ---
 
 ## Task 1: 数据类与 `_doc_score_value`
 
 **Files:**
+
 - Create: `src/pipeline/multi_hop_rag.py`（完整初始内容，含所有模块级 import）
 - Create: `tests/test_multi_hop_rag.py`
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 ```python
 # tests/test_multi_hop_rag.py  ← 完整初始文件内容
@@ -88,14 +89,15 @@ class TestDocScoreValue:
         assert _doc_score_value(doc) == 0.0
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [x] **Step 2: 运行测试确认失败**
 
 ```bash
 conda run -n rag pytest tests/test_multi_hop_rag.py -v
 ```
+
 预期：`ModuleNotFoundError: No module named 'src.pipeline.multi_hop_rag'`
 
-- [ ] **Step 3: 创建 `src/pipeline/multi_hop_rag.py`（完整初始内容）**
+- [x] **Step 3: 创建 `src/pipeline/multi_hop_rag.py`（完整初始内容）**
 
 > 注意：所有模块级 import（含 `json`、`logging`、`load_dotenv` 等）一次性写入顶部，避免后续 Task 追加时出现重复 import。
 
@@ -159,14 +161,15 @@ def _doc_score_value(doc: Document) -> float:
     return 0.0
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [x] **Step 4: 运行测试确认通过**
 
 ```bash
 conda run -n rag pytest tests/test_multi_hop_rag.py::TestDataClasses tests/test_multi_hop_rag.py::TestDocScoreValue -v
 ```
+
 预期：8 passed
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```bash
 git add src/pipeline/multi_hop_rag.py tests/test_multi_hop_rag.py
@@ -178,6 +181,7 @@ git commit -m "feat: add MultiHopResult dataclasses and _doc_score_value"
 ## Task 2: `merge_docs` 去重合并
 
 **Files:**
+
 - Modify: `src/pipeline/multi_hop_rag.py`（在 `_doc_score_value` 之后追加）
 - Modify: `tests/test_multi_hop_rag.py`（在文件末尾追加）
 
@@ -231,9 +235,10 @@ class TestMergeDocs:
 ```bash
 conda run -n rag pytest tests/test_multi_hop_rag.py::TestMergeDocs -v
 ```
+
 预期：`ImportError: cannot import name 'merge_docs'`
 
-- [ ] **Step 3: 实现 `merge_docs`（追加到 `src/pipeline/multi_hop_rag.py` 末尾）**
+- [x] **Step 3: 实现 `merge_docs`（追加到 `src/pipeline/multi_hop_rag.py` 末尾）**
 
 ```python
 # 追加到 src/pipeline/multi_hop_rag.py 末尾
@@ -250,11 +255,12 @@ def merge_docs(hop_docs: list[list[Document]]) -> list[Document]:
     return sorted(seen.values(), key=_doc_score_value, reverse=True)
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [x] **Step 4: 运行测试确认通过**
 
 ```bash
 conda run -n rag pytest tests/test_multi_hop_rag.py::TestMergeDocs -v
 ```
+
 预期：6 passed
 
 - [ ] **Step 5: 提交**
@@ -269,10 +275,11 @@ git commit -m "feat: implement merge_docs with url/title dedup"
 ## Task 3: `decompose_query` 子问题分解
 
 **Files:**
+
 - Modify: `src/pipeline/multi_hop_rag.py`（在 `merge_docs` 之后追加）
 - Modify: `tests/test_multi_hop_rag.py`（在文件末尾追加）
 
-- [ ] **Step 1: 写失败测试（追加到 `tests/test_multi_hop_rag.py` 末尾）**
+- [x] **Step 1: 写失败测试（追加到 `tests/test_multi_hop_rag.py` 末尾）**
 
 ```python
 # 追加到 tests/test_multi_hop_rag.py 末尾
@@ -313,14 +320,15 @@ class TestDecomposeQuery:
         assert llm.invoke.call_count == 1
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [x] **Step 2: 运行测试确认失败**
 
 ```bash
 conda run -n rag pytest tests/test_multi_hop_rag.py::TestDecomposeQuery -v
 ```
+
 预期：`ImportError: cannot import name 'decompose_query'`
 
-- [ ] **Step 3: 实现 `decompose_query`（追加到 `src/pipeline/multi_hop_rag.py` 末尾）**
+- [x] **Step 3: 实现 `decompose_query`（追加到 `src/pipeline/multi_hop_rag.py` 末尾）**
 
 ```python
 # 追加到 src/pipeline/multi_hop_rag.py 末尾
@@ -349,11 +357,12 @@ def decompose_query(query: str, llm) -> list[str]:
     return [query]
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [x] **Step 4: 运行测试确认通过**
 
 ```bash
 conda run -n rag pytest tests/test_multi_hop_rag.py::TestDecomposeQuery -v
 ```
+
 预期：5 passed
 
 - [ ] **Step 5: 提交**
@@ -368,6 +377,7 @@ git commit -m "feat: implement decompose_query with fallback"
 ## Task 4: `MultiHopRAGPipeline` 类
 
 **Files:**
+
 - Modify: `src/pipeline/multi_hop_rag.py`（在 `decompose_query` 之后追加）
 - Modify: `tests/test_multi_hop_rag.py`（在文件末尾追加）
 
@@ -451,6 +461,7 @@ class TestMultiHopRAGPipelineStream:
 ```bash
 conda run -n rag pytest tests/test_multi_hop_rag.py::TestMultiHopRAGPipelineRetrieve tests/test_multi_hop_rag.py::TestMultiHopRAGPipelineStream -v
 ```
+
 预期：`ImportError: cannot import name 'MultiHopRAGPipeline'`
 
 - [ ] **Step 3: 实现 `MultiHopRAGPipeline`（追加到 `src/pipeline/multi_hop_rag.py` 末尾）**
@@ -533,6 +544,7 @@ class MultiHopRAGPipeline:
 ```bash
 conda run -n rag pytest tests/test_multi_hop_rag.py -v
 ```
+
 预期：全部 passed
 
 - [ ] **Step 5: 确认现有测试不受影响**
@@ -540,6 +552,7 @@ conda run -n rag pytest tests/test_multi_hop_rag.py -v
 ```bash
 conda run -n rag pytest tests/ -v --ignore=tests/integration
 ```
+
 预期：全部 passed
 
 - [ ] **Step 6: 提交**
@@ -554,6 +567,7 @@ git commit -m "feat: implement MultiHopRAGPipeline with retrieve() and stream()"
 ## Task 5: UI 侧边栏 Pipeline 模式切换
 
 **Files:**
+
 - Modify: `src/ui/app.py`
 
 > Streamlit UI 无法直接单元测试，通过 smoke test 手动验证。`build_multi_hop_pipeline` 是纯 Python 函数，但其正确性由 Task 4 对 `MultiHopRAGPipeline` 的测试覆盖。
@@ -610,6 +624,7 @@ git commit -m "feat: add Pipeline mode radio and disable compare in multi-hop"
 ## Task 6: UI Session State 与 Ask 按钮多跳分支
 
 **Files:**
+
 - Modify: `src/ui/app.py`
 
 - [ ] **Step 1: 扩展过期状态清除块**
@@ -686,6 +701,7 @@ git commit -m "feat: add multi-hop session state and ask button branch"
 ## Task 7: UI 多跳输出渲染
 
 **Files:**
+
 - Modify: `src/ui/app.py`
 
 - [ ] **Step 1: 新增多跳渲染分支**
@@ -796,6 +812,7 @@ elif last_pipeline_mode == "Multi-hop" and multi_hop_result is not None:
 ```bash
 conda run -n rag pytest tests/ -v --ignore=tests/integration
 ```
+
 预期：全部 passed
 
 - [ ] **Step 3: 手动 smoke test**
@@ -805,6 +822,7 @@ conda run -n rag streamlit run src/ui/app.py
 ```
 
 验证清单：
+
 - [ ] 侧边栏出现 Pipeline radio（Single-hop / Multi-hop）
 - [ ] 切换到 Multi-hop 时 Compare all 4 复选框变灰
 - [ ] 选择预设问题，点击 Ask，出现 spinner "Decomposing question and retrieving…"
@@ -831,6 +849,7 @@ git commit -m "feat: add multi-hop output rendering in Streamlit UI"
 ```bash
 conda run -n rag pytest tests/ -v --ignore=tests/integration
 ```
+
 预期：全部 passed，无新增失败
 
 - [ ] **Step 2: 确认单跳 smoke test 不受影响**
@@ -838,6 +857,7 @@ conda run -n rag pytest tests/ -v --ignore=tests/integration
 ```bash
 conda run -n rag python -m src.pipeline.demo
 ```
+
 预期：正常运行
 
 - [ ] **Step 3: 最终提交**

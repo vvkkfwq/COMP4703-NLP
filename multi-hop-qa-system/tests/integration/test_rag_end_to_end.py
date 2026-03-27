@@ -295,3 +295,24 @@ class TestRAGPerformance:
 
         # mock_retriever 应该始终返回合理数量的文档
         assert len(mock_retriever.invoke("test")) <= 10
+
+    @pytest.mark.integration
+    def test_agent_rag_pipeline_end_to_end(openai_api_key):
+        """AgentRAGPipeline 端到端测试：至少完成 1 跳，返回非空答案。"""
+        from src.pipeline.agent_rag import AgentRAGPipeline
+        from src.retriever.semantic import SemanticRetriever
+        from src.config import EMBED_MODELS, EMBED_MODEL_DEFAULT
+
+        cfg = EMBED_MODELS[EMBED_MODEL_DEFAULT]
+        retriever = SemanticRetriever(
+            chroma_dir=str(cfg["chroma_dir"]),
+            embedding_model=cfg["model_name"],
+            enable_reranker=False,
+        )
+        pipeline = AgentRAGPipeline(retriever=retriever)
+        result = pipeline.run("What are the main applications of machine learning?")
+
+        assert result["hop_count"] >= 1
+        assert len(result["trace"]) >= 1
+        assert result["answer"] != ""
+        assert len(result["retrieved_docs"]) > 0
