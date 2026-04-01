@@ -4,6 +4,8 @@ RAGAS 评估包装器 — 单条按需评分
 """
 from __future__ import annotations
 
+import logging
+
 _NULL_RESULT: dict[str, float | None] = {
     "faithfulness": None,
     "answer_relevancy": None,
@@ -38,9 +40,9 @@ def run_ragas(
             context_recall,
             faithfulness,
         )
-    except (ImportError, TypeError):
-        print(
-            "WARNING: ragas not installed or incompatible version. "
+    except Exception:  # noqa: BLE001
+        logging.warning(
+            "ragas import failed (not installed or incompatible). "
             "Run: pip install 'ragas>=0.2,<0.3'"
         )
         return dict(_NULL_RESULT)
@@ -68,5 +70,5 @@ def run_ragas(
             "context_recall": scores.get("context_recall"),
         }
     except Exception as exc:  # noqa: BLE001
-        print(f"WARNING: RAGAS evaluation failed: {exc}")
+        logging.warning("RAGAS evaluation failed: %s", exc)
         return dict(_NULL_RESULT)
