@@ -2,8 +2,11 @@
 RAGAS 评估包装器 — 单条按需评分
 用法: from src.evaluation.ragas_eval import run_ragas
 """
+
 from __future__ import annotations
 
+import asyncio
+import concurrent.futures
 import logging
 
 _NULL_RESULT: dict[str, float | None] = {
@@ -40,10 +43,11 @@ def run_ragas(
             context_recall,
             faithfulness,
         )
-    except Exception:  # noqa: BLE001
+    except Exception as _import_exc:  # noqa: BLE001
         logging.warning(
-            "ragas import failed (not installed or incompatible). "
-            "Run: pip install 'ragas>=0.2,<0.3'"
+            "ragas import failed (%s: %s). " "Run: pip install 'ragas>=0.2,<0.3'",
+            type(_import_exc).__name__,
+            _import_exc,
         )
         return dict(_NULL_RESULT)
 
@@ -58,10 +62,22 @@ def run_ragas(
                 }
             ]
         )
-        result = evaluate(
-            dataset,
-            metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
-        )
+        # Run in a worker thread with a fresh standard asyncio event loop so
+        # that nest_asyncio (used internally by ragas) can patch it — uvloop
+        # (used by Streamlit) cannot be patched and raises ValueError otherwise.
+        def _run_evaluate():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                return evaluate(
+                    dataset,
+                    metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+                )
+            finally:
+                loop.close()
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as _pool:
+            result = _pool.submit(_run_evaluate).result(timeout=180)
         scores: dict = result.scores[0]
         return {
             k: float(v) if v is not None else None
