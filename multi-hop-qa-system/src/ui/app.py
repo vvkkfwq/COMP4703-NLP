@@ -123,14 +123,14 @@ def build_agent_pipeline(
     return AgentRAGPipeline(retriever)
 
 
-def _render_ragas_eval(answer: str, docs: list, last_qa: dict) -> None:
+def _render_ragas_eval(answer: str, docs: list, last_qa: dict, *, key: str = "run_ragas_btn") -> None:
     """Render RAGAS evaluation button and metric results (preset mode only)."""
     from src.evaluation.ragas_eval import run_ragas  # lazy — avoids import cost at startup
 
     st.divider()
     st.subheader("RAGAS Evaluation")
 
-    if st.button("Run RAGAS Evaluation", key="run_ragas_btn"):
+    if st.button("Run RAGAS Evaluation", key=key):
         contexts = [doc.page_content for doc in docs]
         with st.spinner("Running RAGAS evaluation… (15–30 s, uses OpenAI)"):
             scores = run_ragas(
@@ -244,7 +244,7 @@ else:
 ask_clicked = st.button("Ask", type="primary", disabled=not (query and query.strip()))
 
 # Clear stale output when user switches question without submitting.
-current_query_key = (mode, (query or "").strip())
+current_query_key = (mode, pipeline_mode, (query or "").strip())
 previous_query_key = st.session_state.get("current_query_key")
 if (
     previous_query_key is not None
