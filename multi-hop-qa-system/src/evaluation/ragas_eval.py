@@ -34,60 +34,66 @@ def run_ragas(
     Returns:
         Dict with keys faithfulness, answer_relevancy, context_precision,
         context_recall. Values are floats in [0, 1] or None on failure.
+
+    Note:
+        All imports and evaluate() run inside a worker thread with a fresh
+        standard asyncio event loop. This bypasses the uvloop incompatibility
+        with nest_asyncio (which RAGAS uses internally). If the imports were
+        done in the main Streamlit thread, nest_asyncio.apply() would attempt
+        to patch the uvloop event loop and raise ValueError.
     """
-    try:
-        from ragas import EvaluationDataset, evaluate  # noqa: PLC0415
-        from ragas.metrics import (  # noqa: PLC0415
-            answer_relevancy,
-            context_precision,
-            context_recall,
-            faithfulness,
-        )
-    except Exception as _import_exc:  # noqa: BLE001
-        logging.warning(
-            "ragas import failed (%s: %s). " "Run: pip install 'ragas>=0.2,<0.3'",
-            type(_import_exc).__name__,
-            _import_exc,
-        )
-        return dict(_NULL_RESULT)
+    def _run_in_thread() -> dict[str, float | None]:
+        # Create a standard SelectorEventLoop directly — bypasses the global
+        # event loop policy (which Streamlit sets to uvloop). uvloop cannot be
+        # patched by nest_asyncio (used internally by ragas), so we must avoid
+        # it. SelectorEventLoop works on all platforms and is nest_asyncio-safe.
+        loop = asyncio.SelectorEventLoop()
+        asyncio.set_event_loop(loop)
+        try:
+            from ragas import EvaluationDataset, evaluate  # noqa: PLC0415
+            from ragas.metrics import (  # noqa: PLC0415
+                answer_relevancy,
+                context_precision,
+                context_recall,
+                faithfulness,
+            )
+
+            dataset = EvaluationDataset.from_list(
+                [
+                    {
+                        "user_input": question,
+                        "retrieved_contexts": contexts,
+                        "response": answer,
+                        "reference": ground_truth,
+                    }
+                ]
+            )
+            result = evaluate(
+                dataset,
+                metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+            )
+            scores: dict = result.scores[0]
+            return {
+                k: float(v) if v is not None else None
+                for k, v in {
+                    "faithfulness": scores.get("faithfulness"),
+                    "answer_relevancy": scores.get("answer_relevancy"),
+                    "context_precision": scores.get("context_precision"),
+                    "context_recall": scores.get("context_recall"),
+                }.items()
+            }
+        except Exception as exc:  # noqa: BLE001
+            logging.warning("RAGAS evaluation failed: %s", exc)
+            return dict(_NULL_RESULT)
+        finally:
+            loop.close()
 
     try:
-        dataset = EvaluationDataset.from_list(
-            [
-                {
-                    "user_input": question,
-                    "retrieved_contexts": contexts,
-                    "response": answer,
-                    "reference": ground_truth,
-                }
-            ]
-        )
-        # Run in a worker thread with a fresh standard asyncio event loop so
-        # that nest_asyncio (used internally by ragas) can patch it — uvloop
-        # (used by Streamlit) cannot be patched and raises ValueError otherwise.
-        def _run_evaluate():
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            try:
-                return evaluate(
-                    dataset,
-                    metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
-                )
-            finally:
-                loop.close()
-
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as _pool:
-            result = _pool.submit(_run_evaluate).result(timeout=180)
-        scores: dict = result.scores[0]
-        return {
-            k: float(v) if v is not None else None
-            for k, v in {
-                "faithfulness": scores.get("faithfulness"),
-                "answer_relevancy": scores.get("answer_relevancy"),
-                "context_precision": scores.get("context_precision"),
-                "context_recall": scores.get("context_recall"),
-            }.items()
-        }
+            return _pool.submit(_run_in_thread).result(timeout=180)
+    except concurrent.futures.TimeoutError:
+        logging.warning("RAGAS evaluation timed out after 180 s")
+        return dict(_NULL_RESULT)
     except Exception as exc:  # noqa: BLE001
-        logging.warning("RAGAS evaluation failed: %s", exc)
+        logging.warning("RAGAS thread execution failed: %s", exc)
         return dict(_NULL_RESULT)
