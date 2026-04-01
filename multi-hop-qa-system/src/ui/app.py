@@ -123,6 +123,39 @@ def build_agent_pipeline(
     return AgentRAGPipeline(retriever)
 
 
+def _render_ragas_eval(answer: str, docs: list, last_qa: dict) -> None:
+    """Render RAGAS evaluation button and metric results (preset mode only)."""
+    from src.evaluation.ragas_eval import run_ragas  # lazy — avoids import cost at startup
+
+    st.divider()
+    st.subheader("RAGAS Evaluation")
+
+    if st.button("Run RAGAS Evaluation", key="run_ragas_btn"):
+        contexts = [doc.page_content for doc in docs]
+        with st.spinner("Running RAGAS evaluation… (15–30 s, uses OpenAI)"):
+            scores = run_ragas(
+                question=last_qa["query"],
+                answer=answer,
+                contexts=contexts,
+                ground_truth=last_qa.get("answer", ""),
+            )
+        st.session_state["ragas_result"] = scores
+
+    scores = st.session_state.get("ragas_result")
+    if scores is not None:
+        cols = st.columns(4)
+        labels = [
+            ("faithfulness", "Faithfulness"),
+            ("answer_relevancy", "Ans. Relevancy"),
+            ("context_precision", "Ctx. Precision"),
+            ("context_recall", "Ctx. Recall"),
+        ]
+        for col, (key, label) in zip(cols, labels):
+            val = scores.get(key)
+            with col:
+                st.metric(label, f"{val:.2f}" if val is not None else "—")
+
+
 @st.cache_data(show_spinner=False)
 def load_qa_data() -> list[dict]:
     with open(RAG_PATH) as f:
@@ -225,11 +258,13 @@ if (
     st.session_state["pending_mh_stream"] = False
     st.session_state["agent_result"] = None
     st.session_state["pending_agent_stream"] = False
+    st.session_state["ragas_result"] = None
 st.session_state["current_query_key"] = current_query_key
 
 # ── Session state: run pipeline on button click ───────────────────────────────
 
 if ask_clicked and query and query.strip():
+    st.session_state["ragas_result"] = None
     if pipeline_mode == "Agent":
         with st.spinner("Running agentic retrieval…"):
             p = build_agent_pipeline(model_key, use_bm25, enable_reranker)
