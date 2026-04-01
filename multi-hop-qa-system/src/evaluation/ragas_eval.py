@@ -64,10 +64,13 @@ def run_ragas(
         )
         scores: dict = result.scores[0]
         return {
-            "faithfulness": scores.get("faithfulness"),
-            "answer_relevancy": scores.get("answer_relevancy"),
-            "context_precision": scores.get("context_precision"),
-            "context_recall": scores.get("context_recall"),
+            k: float(v) if v is not None else None
+            for k, v in {
+                "faithfulness": scores.get("faithfulness"),
+                "answer_relevancy": scores.get("answer_relevancy"),
+                "context_precision": scores.get("context_precision"),
+                "context_recall": scores.get("context_recall"),
+            }.items()
         }
     except Exception as exc:  # noqa: BLE001
         logging.warning("RAGAS evaluation failed: %s", exc)
