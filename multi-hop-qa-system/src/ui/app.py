@@ -422,6 +422,12 @@ if last_pipeline_mode == "Agent" and agent_result is not None:
                 st.markdown("\n\n".join(rows))
             else:
                 st.caption("No evidence list available.")
+        _render_ragas_eval(
+            agent_result.get("answer", ""),
+            agent_result.get("retrieved_docs", []),
+            last_qa,
+            key="run_ragas_btn_agent",
+        )
 
 elif last_pipeline_mode == "Multi-hop" and multi_hop_result is not None:
     st.divider()
@@ -519,6 +525,12 @@ elif last_pipeline_mode == "Multi-hop" and multi_hop_result is not None:
                 st.markdown("\n\n".join(rows))
             else:
                 st.caption("No evidence list available.")
+        _render_ragas_eval(
+            multi_hop_result.answer or "",
+            multi_hop_result.merged_docs,
+            last_qa,
+            key="run_ragas_btn_mh",
+        )
 
 elif compare_results:
     st.divider()
@@ -631,3 +643,9 @@ elif result:
                 st.markdown("\n\n".join(rows))
             else:
                 st.caption("No evidence list available.")
+        _render_ragas_eval(
+            result.get("answer", ""),
+            _result_docs(result),
+            last_qa,
+            key="run_ragas_btn_single",
+        )
