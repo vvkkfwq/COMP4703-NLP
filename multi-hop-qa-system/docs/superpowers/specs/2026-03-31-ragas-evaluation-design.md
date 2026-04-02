@@ -9,24 +9,24 @@
 
 现有评估体系包含 token-F1（答案质量）和 NDCG/MAP/MRR/Hits（检索质量），缺少 LLM-based 的端到端评估维度。Milestone 8 引入 RAGAS，补充以下四个指标：
 
-| 指标 | 含义 | 依赖 ground truth | 依赖 LLM |
-|------|------|:-:|:-:|
-| faithfulness | 答案是否完全基于检索上下文，不捏造 | ❌ | ✅ |
-| answer_relevancy | 答案是否切题 | ❌ | ✅ |
-| context_precision | 相关上下文是否排在前面 | ✅ | ✅ |
-| context_recall | 所需信息是否被检索回来 | ✅ | ✅ |
+| 指标              | 含义                               | 依赖 ground truth | 依赖 LLM |
+| ----------------- | ---------------------------------- | :---------------: | :------: |
+| faithfulness      | 答案是否完全基于检索上下文，不捏造 |        ❌         |    ✅    |
+| answer_relevancy  | 答案是否切题                       |        ❌         |    ✅    |
+| context_precision | 相关上下文是否排在前面             |        ✅         |    ✅    |
+| context_recall    | 所需信息是否被检索回来             |        ✅         |    ✅    |
 
 ---
 
 ## 范围决策
 
-| 决策点 | 结论 | 理由 |
-|--------|------|------|
-| 触发方式 | UI 按需单条评估 | MVP 优先，费用可控 |
-| 生效模式 | Preset questions 模式 | free-form 无 ground truth，context_precision/recall 无法计算 |
-| Pipeline 支持 | Single-hop、Multi-hop、Agent 均支持 | 三种模式输出结构一致（answer + retrieved_docs） |
-| UI 交互 | Spinner 阻塞等待 | 与现有 pipeline 调用风格一致，实现最简 |
-| build_metrics.py | 不改动 | 批量 RAGAS 费用高，留作后续 Milestone |
+| 决策点           | 结论                                | 理由                                                         |
+| ---------------- | ----------------------------------- | ------------------------------------------------------------ |
+| 触发方式         | UI 按需单条评估                     | MVP 优先，费用可控                                           |
+| 生效模式         | Preset questions 模式               | free-form 无 ground truth，context_precision/recall 无法计算 |
+| Pipeline 支持    | Single-hop、Multi-hop、Agent 均支持 | 三种模式输出结构一致（answer + retrieved_docs）              |
+| UI 交互          | Spinner 阻塞等待                    | 与现有 pipeline 调用风格一致，实现最简                       |
+| build_metrics.py | 不改动                              | 批量 RAGAS 费用高，留作后续 Milestone                        |
 
 ---
 
@@ -47,6 +47,7 @@ def run_ragas(
 ```
 
 **行为**：
+
 - 针对 `ragas>=0.2`（新版 API）：使用 `EvaluationDataset` + `evaluate(dataset, metrics=[...])`；实现时先 `import ragas; assert ragas.__version__ >= "0.2"` 确认版本，并在 `requirements.txt` / 注释中锁定 `ragas>=0.2,<0.3`
 - 内部组装单条数据集，调用 `evaluate(dataset, metrics=[Faithfulness(), AnswerRelevancy(), ContextPrecision(), ContextRecall()])`
 - 返回 `{"faithfulness": float, "answer_relevancy": float, "context_precision": float, "context_recall": float}`
@@ -54,12 +55,12 @@ def run_ragas(
 
 **入参来源**（由 UI 负责组装）：
 
-| 参数 | 来源 |
-|------|------|
-| `question` | `last_query` |
-| `answer` | `result["answer"]` / `multi_hop_result.answer` / `agent_result["answer"]` |
-| `contexts` | `[doc.page_content for doc in retrieved_docs]` |
-| `ground_truth` | `last_qa["answer"]` |
+| 参数           | 来源                                                                      |
+| -------------- | ------------------------------------------------------------------------- |
+| `question`     | `last_query`                                                              |
+| `answer`       | `result["answer"]` / `multi_hop_result.answer` / `agent_result["answer"]` |
+| `contexts`     | `[doc.page_content for doc in retrieved_docs]`                            |
+| `ground_truth` | `last_qa["answer"]`                                                       |
 
 ### 改动：`src/ui/app.py`
 

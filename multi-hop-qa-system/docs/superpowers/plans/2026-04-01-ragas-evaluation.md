@@ -12,18 +12,19 @@
 
 ## File Map
 
-| Action | Path | Responsibility |
-|--------|------|----------------|
-| Create | `src/evaluation/ragas_eval.py` | `run_ragas()` wrapper; isolates RAGAS API details |
-| Create | `tests/test_ragas_eval.py` | Unit tests for `run_ragas()` (all mocked) |
-| Modify | `requirements.txt` | Add `ragas>=0.2,<0.3` |
-| Modify | `src/ui/app.py` | Helper `_render_ragas_eval()`, session-state cleanup, wiring into 3 eval sections |
+| Action | Path                           | Responsibility                                                                    |
+| ------ | ------------------------------ | --------------------------------------------------------------------------------- |
+| Create | `src/evaluation/ragas_eval.py` | `run_ragas()` wrapper; isolates RAGAS API details                                 |
+| Create | `tests/test_ragas_eval.py`     | Unit tests for `run_ragas()` (all mocked)                                         |
+| Modify | `requirements.txt`             | Add `ragas>=0.2,<0.3`                                                             |
+| Modify | `src/ui/app.py`                | Helper `_render_ragas_eval()`, session-state cleanup, wiring into 3 eval sections |
 
 ---
 
 ## Task 1: Add ragas to requirements and install
 
 **Files:**
+
 - Modify: `requirements.txt`
 
 - [ ] **Step 1: Add dependency**
@@ -74,6 +75,7 @@ git commit -m "chore: add ragas>=0.2,<0.3 dependency"
 ## Task 2: Write failing tests for run_ragas()
 
 **Files:**
+
 - Create: `tests/test_ragas_eval.py`
 
 - [ ] **Step 1: Write the failing tests**
@@ -205,6 +207,7 @@ Expected: `ModuleNotFoundError: No module named 'src.evaluation.ragas_eval'` —
 ## Task 3: Implement src/evaluation/ragas_eval.py
 
 **Files:**
+
 - Create: `src/evaluation/ragas_eval.py`
 
 - [ ] **Step 1: Create the file**
@@ -304,6 +307,7 @@ git commit -m "feat: add ragas_eval.run_ragas() wrapper with unit tests"
 ## Task 4: Update app.py — session cleanup + helper function
 
 **Files:**
+
 - Modify: `src/ui/app.py`
 
 This task adds the `_render_ragas_eval()` helper and clears `ragas_result` when the question changes or a new query is submitted. No wiring into pipeline branches yet.
@@ -311,6 +315,7 @@ This task adds the `_render_ragas_eval()` helper and clears `ragas_result` when 
 - [ ] **Step 1: Add `ragas_result` to the question-change clearing block**
 
 Find this block (around line 216–228):
+
 ```python
 if (
     previous_query_key is not None
@@ -327,6 +332,7 @@ if (
 ```
 
 Add one line at the end of the `if` block:
+
 ```python
     st.session_state["ragas_result"] = None
 ```
@@ -334,6 +340,7 @@ Add one line at the end of the `if` block:
 - [ ] **Step 2: Also clear `ragas_result` when a new query is submitted**
 
 Find the `if ask_clicked and query and query.strip():` block (around line 232). After the opening line add:
+
 ```python
     st.session_state["ragas_result"] = None
 ```
@@ -390,6 +397,7 @@ git commit -m "feat: add _render_ragas_eval helper and session state cleanup"
 ## Task 5: Wire RAGAS eval into all three pipeline eval sections
 
 **Files:**
+
 - Modify: `src/ui/app.py`
 
 Each pipeline's eval block ends after the "Expected Evidence Sources" column. Wire `_render_ragas_eval()` as the last call inside each `if last_mode == "Preset questions"` block.
@@ -397,6 +405,7 @@ Each pipeline's eval block ends after the "Expected Evidence Sources" column. Wi
 - [ ] **Step 1: Wire into the Agent eval section**
 
 Find the Agent eval block (the one inside `if last_pipeline_mode == "Agent" and agent_result is not None:`). It ends after this code:
+
 ```python
             else:
                 st.caption("No evidence list available.")
