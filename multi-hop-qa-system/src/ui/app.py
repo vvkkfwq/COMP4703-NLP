@@ -123,21 +123,34 @@ def build_agent_pipeline(
     return AgentRAGPipeline(retriever)
 
 
-def _render_ragas_eval(answer: str, docs: list, last_qa: dict, *, key: str = "run_ragas_btn") -> None:
+def _render_ragas_eval(
+    answer: str, docs: list, last_qa: dict, *, key: str = "run_ragas_btn"
+) -> None:
     """Render RAGAS evaluation button and metric results (preset mode only)."""
-    from src.evaluation.ragas_eval import run_ragas  # lazy — avoids import cost at startup
+    from src.evaluation.ragas_eval import (
+        run_ragas,
+    )  # lazy — avoids import cost at startup
 
     st.divider()
     st.subheader("RAGAS Evaluation")
 
     if st.button("Run RAGAS Evaluation", key=key):
         contexts = [doc.page_content for doc in docs]
+
+        # Build complete reference answer from evidence_list for better
+        # Context Precision/Recall evaluation. Falls back to short answer
+        # if evidence_list is not available.
+        evidence_facts = [ev["fact"] for ev in last_qa.get("evidence_list", [])]
+        ground_truth = (
+            " ".join(evidence_facts) if evidence_facts else last_qa.get("answer", "")
+        )
+
         with st.spinner("Running RAGAS evaluation… (15–30 s, uses OpenAI)"):
             scores = run_ragas(
                 question=last_qa["query"],
                 answer=answer,
                 contexts=contexts,
-                ground_truth=last_qa.get("answer", ""),
+                ground_truth=ground_truth,
             )
         st.session_state["ragas_result"] = scores
 
